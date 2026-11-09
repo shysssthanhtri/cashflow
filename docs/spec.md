@@ -10,7 +10,7 @@ Spec date: 2026-11-09. No git remote yet, so this file is the tracker. Update th
 
 | # | Issue | Priority | Effort | Depends on | Status |
 |---|-------|----------|--------|------------|--------|
-| 1 | Foundation: scaffold, schema, RLS, auth | P1 | ~7h | none | TODO |
+| 1 | Foundation: scaffold, schema, RLS, auth | P1 | ~7h | none | DONE |
 | 2 | Households: create, switch, invite | P1 | ~6h | 1 | TODO |
 | 3 | Add tab: quick-entry, parser, chips | P1 | ~8h | 1, 2 | TODO |
 | 4 | Offline queue and sync | P1 | ~6h | 3 | TODO |
@@ -92,12 +92,12 @@ create index on transactions (household_id, date);
 
 | Task | What | Status | Notes |
 |------|------|--------|-------|
-| 1.1 | Scaffold Next.js (App Router, TS, Tailwind), init shadcn, add ESLint and `tsc --noEmit` scripts. Create `app/`, `components/ui`, `lib/`, `supabase/migrations` | TODO | |
-| 1.2 | Migration with the schema above, RLS policies, `unique (household_id, client_id)`, index `(household_id, date)` | TODO | |
-| 1.3 | Supabase clients: server (cookies) and browser, env vars `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, server-only `SUPABASE_SERVICE_ROLE_KEY`. Add `.env.example` | TODO | |
-| 1.4 | Magic-link or OTP sign-in page and auth callback route. Signed-out requests redirect to sign-in | TODO | |
-| 1.5 | First sign-in name prompt, stored in `profiles.display_name`. Skipped on later sign-ins | TODO | |
-| 1.6 | Design tokens in Tailwind and CSS variables, plus the typeface from `docs/PLAN.md` (decision 4A) | TODO | |
+| 1.1 | Scaffold Next.js (App Router, TS, Tailwind), init shadcn, add ESLint and `tsc --noEmit` scripts. Create `app/`, `components/ui`, `lib/`, `supabase/migrations` | DONE | Verified 2026-11-09 |
+| 1.2 | Migration with the schema above, RLS policies, `unique (household_id, client_id)`, index `(household_id, date)` | DONE | Verified 2026-11-09 |
+| 1.3 | Supabase clients: server (cookies) and browser, env vars `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, server-only `SUPABASE_SERVICE_ROLE_KEY`. Add `.env.example` | DONE | Verified 2026-11-09 |
+| 1.4 | Magic-link or OTP sign-in page and auth callback route. Signed-out requests redirect to sign-in | DONE | Verified 2026-11-09 |
+| 1.5 | First sign-in name prompt, stored in `profiles.display_name`. Skipped on later sign-ins | DONE | Verified 2026-11-09 |
+| 1.6 | Design tokens in Tailwind and CSS variables, plus the typeface from `docs/PLAN.md` (decision 4A) | DONE | Verified 2026-11-09 |
 
 Verify (manual):
 1. `eslint .` and `tsc --noEmit` pass.
