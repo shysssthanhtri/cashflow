@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
+  async redirects() {
+    return [{ source: "/", destination: "/add", permanent: false }];
+  },
   turbopack: {
     rules: {
       "*.css": {
