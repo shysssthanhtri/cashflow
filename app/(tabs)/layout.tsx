@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
 
+import { HouseholdSwitcher } from "@/components/household-switcher";
+import { getHouseholds, resolveActiveHousehold } from "@/lib/household";
 import { createClient } from "@/lib/supabase/server";
 
 async function AuthGate({ children }: { children: React.ReactNode }) {
@@ -19,7 +22,25 @@ async function AuthGate({ children }: { children: React.ReactNode }) {
     .maybeSingle();
   if (!profile) redirect("/welcome");
 
-  return children;
+  const households = await getHouseholds(supabase, user.id);
+  const active = await resolveActiveHousehold(households);
+  if (!active) redirect("/households/new");
+
+  return (
+    <>
+      <header className="flex items-center justify-between gap-3 px-6 pt-4">
+        {households.length >= 2 ? (
+          <HouseholdSwitcher households={households} activeId={active.id} />
+        ) : (
+          <span className="font-semibold">{active.name}</span>
+        )}
+        <Link href="/members" className="text-sm underline">
+          Members
+        </Link>
+      </header>
+      {children}
+    </>
+  );
 }
 
 export default function TabsLayout({

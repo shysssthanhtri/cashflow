@@ -11,7 +11,7 @@ Spec date: 2026-11-09. No git remote yet, so this file is the tracker. Update th
 | # | Issue | Priority | Effort | Depends on | Status |
 |---|-------|----------|--------|------------|--------|
 | 1 | Foundation: scaffold, schema, RLS, auth | P1 | ~7h | none | DONE |
-| 2 | Households: create, switch, invite | P1 | ~6h | 1 | TODO |
+| 2 | Households: create, switch, invite | P1 | ~6h | 1 | DONE |
 | 3 | Add tab: quick-entry, parser, chips | P1 | ~8h | 1, 2 | TODO |
 | 4 | Offline queue and sync | P1 | ~6h | 3 | TODO |
 | 5 | History | P2 | ~8h | 3 | TODO |
@@ -109,10 +109,10 @@ Verify (manual):
 
 | Task | What | Status | Notes |
 |------|------|--------|-------|
-| 2.1 | Create-household screen. A signed-in user with no household lands here. A Server Action inserts `households` and an `owner` row in `household_members` | TODO | |
-| 2.2 | Active-household resolution: read the cookie, fall back to the most recently joined, set the cookie server-side. Shared helper in `lib/` | TODO | |
-| 2.3 | Header household switcher, shown only with 2 or more households. Switching sets the cookie and refreshes | TODO | |
-| 2.4 | Invite-by-email Server Action (rules in "Decisions locked") and a members list with an invite form | TODO | |
+| 2.1 | Create-household screen. A signed-in user with no household lands here. A Server Action inserts `households` and an `owner` row in `household_members` | DONE | Verified 2026-11-11 |
+| 2.2 | Active-household resolution: read the cookie, fall back to the most recently joined, set the cookie server-side. Shared helper in `lib/` | DONE | Verified 2026-11-11 |
+| 2.3 | Header household switcher, shown only with 2 or more households. Switching sets the cookie and refreshes | DONE | Verified 2026-11-11 |
+| 2.4 | Invite-by-email Server Action (rules in "Decisions locked") and a members list with an invite form | DONE | Verified 2026-11-11 |
 
 Verify (manual):
 1. A user with no household cannot reach Add, History or Dashboard and is sent to the create screen. After creating one, they land on the Add tab.
