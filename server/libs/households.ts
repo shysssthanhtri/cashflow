@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -10,13 +11,21 @@ export type HouseholdSummary = {
   currency: string;
 };
 
-export async function listHouseholds(): Promise<HouseholdSummary[]> {
+export const listHouseholds = cache(async (): Promise<HouseholdSummary[]> => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("households")
     .select("id, name, currency")
     .order("created_at");
   return data ?? [];
+});
+
+export async function getActiveHouseholdSummary(): Promise<HouseholdSummary | null> {
+  const cookieStore = await cookies();
+  const id = cookieStore.get(ACTIVE_HOUSEHOLD_COOKIE)?.value;
+  if (!id) return null;
+  const households = await listHouseholds();
+  return households.find((h) => h.id === id) ?? null;
 }
 
 export async function setActiveHousehold(id: string) {

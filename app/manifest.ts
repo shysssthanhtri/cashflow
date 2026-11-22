@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Cashflow",
     short_name: "Cashflow",
     description: "Track your cashflow",
-    start_url: "/",
+    start_url: "/transactions/add",
     scope: "/",
     display: "standalone",
     background_color: "#18181b",

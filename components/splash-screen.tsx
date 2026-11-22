@@ -1,30 +1,26 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const SPLASH_ID = "app-splash";
-
-// Rendered in the server HTML so it paints before JS loads; removed once hydrated.
+// Rendered in the server HTML so it paints before JS loads; faded out and
+// unmounted by React once hydrated (never remove the node manually).
 export function SplashScreen() {
+  const [phase, setPhase] = useState<"show" | "fade" | "gone">("show");
+
   useEffect(() => {
-    // Drop the marker added by the service worker's cold-start shell.
-    const url = new URL(window.location.href);
-    if (url.searchParams.has("_s")) {
-      url.searchParams.delete("_s");
-      window.history.replaceState(null, "", url);
-    }
-    const el = document.getElementById(SPLASH_ID);
-    if (!el) return;
-    el.style.opacity = "0";
-    const t = setTimeout(() => el.remove(), 300);
-    return () => clearTimeout(t);
+    const fade = setTimeout(() => setPhase("fade"), 0);
+    const gone = setTimeout(() => setPhase("gone"), 300);
+    return () => {
+      clearTimeout(fade);
+      clearTimeout(gone);
+    };
   }, []);
+
+  if (phase === "gone") return null;
 
   return (
     <div
-      id={SPLASH_ID}
-      suppressHydrationWarning
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-background transition-opacity duration-300"
+      className={`fixed inset-0 z-[100] flex items-center justify-center bg-background transition-opacity duration-300 ${phase === "fade" ? "pointer-events-none opacity-0" : ""}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

@@ -1,5 +1,5 @@
 const CACHE = "cashflow-v2";
-const OFFLINE_URLS = ["/", "/shell.html"];
+const OFFLINE_URLS = ["/"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(OFFLINE_URLS)));
@@ -23,24 +23,13 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET" || request.mode !== "navigate") return;
-  const url = new URL(request.url);
   event.respondWith(
-    (url.searchParams.has("_s")
-      ? Promise.resolve(null)
-      : // Cold launch (no open window): paint the cached shell instantly.
-        self.clients
-          .matchAll({ type: "window" })
-          .then((cs) => (cs.length === 0 ? caches.match("/shell.html") : null))
-    ).then((shell) => shell || network(request))
+    fetch(request)
+      .then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(request, copy));
+        return res;
+      })
+      .catch(() => caches.match(request).then((r) => r || caches.match("/")))
   );
 });
-
-function network(request) {
-  return fetch(request)
-    .then((res) => {
-      const copy = res.clone();
-      caches.open(CACHE).then((c) => c.put(request, copy));
-      return res;
-    })
-    .catch(() => caches.match(request).then((r) => r || caches.match("/")));
-}
