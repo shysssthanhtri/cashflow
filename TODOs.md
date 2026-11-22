@@ -2,7 +2,8 @@
 
 - [x] Navigation bar
 - [x] Define pages: add, history, report, budget, other
-- [ ] Define entities
+- [x] Define entities
+- [x] Supabase
 - [ ] Add page
 - [ ] i18n
 - [ ] settings - home - categories

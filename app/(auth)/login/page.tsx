@@ -1,4 +1,4 @@
-import { GoogleSignInButton } from "./google-sign-in-button";
+import { GoogleSignInButton } from "./_components/google-sign-in-button";
 
 export default function LoginPage() {
   return (
