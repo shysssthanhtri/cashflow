@@ -2,7 +2,7 @@ export const ROUTES = {
   home: "/",
   transactionsAdd: "/transactions/add",
   periodsAdd: "/periods/add",
-  history: "/history",
+  periods: "/periods",
   report: "/report",
   budget: "/budget",
   other: "/other",

@@ -78,6 +78,6 @@ export async function addTransaction(
     return { error: "Could not add transaction." };
   }
 
-  revalidatePath(ROUTES.history);
+  revalidatePath(ROUTES.periods);
   return {};
 }

@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 const items = [
   { href: ROUTES.transactionsAdd, label: "Add", icon: PlusIcon },
-  { href: ROUTES.history, label: "History", icon: HistoryIcon },
+  { href: ROUTES.periods, label: "History", icon: HistoryIcon },
   { href: ROUTES.report, label: "Report", icon: ChartPieIcon },
   { href: ROUTES.budget, label: "Budget", icon: WalletIcon },
   { href: ROUTES.other, label: "Other", icon: MenuIcon },
