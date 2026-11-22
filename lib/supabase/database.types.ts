@@ -151,6 +151,58 @@ export type Database = {
           },
         ];
       };
+      periods: {
+        Row: {
+          closed_at: string | null;
+          closed_by: string | null;
+          created_at: string;
+          end_date: string | null;
+          household_id: string;
+          id: string;
+          name: string | null;
+          start_date: string;
+          status: Database["public"]["Enums"]["period_status"];
+        };
+        ComputedFields: never;
+        Insert: {
+          closed_at?: string | null;
+          closed_by?: string | null;
+          created_at?: string;
+          end_date?: string | null;
+          household_id: string;
+          id?: string;
+          name?: string | null;
+          start_date: string;
+          status?: Database["public"]["Enums"]["period_status"];
+        };
+        Update: {
+          closed_at?: string | null;
+          closed_by?: string | null;
+          created_at?: string;
+          end_date?: string | null;
+          household_id?: string;
+          id?: string;
+          name?: string | null;
+          start_date?: string;
+          status?: Database["public"]["Enums"]["period_status"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "periods_closed_by_fkey";
+            columns: ["closed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "periods_household_id_fkey";
+            columns: ["household_id"];
+            isOneToOne: false;
+            referencedRelation: "households";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           created_at: string;
@@ -184,18 +236,19 @@ export type Database = {
       };
       join_household: { Args: { p_invite_code: string }; Returns: string };
       leave_household: { Args: { p_household_id: string }; Returns: undefined };
-      set_nickname: {
-        Args: { p_household_id: string; p_nickname: string };
-        Returns: undefined;
-      };
       promote_member: {
         Args: { p_household_id: string; p_user_id: string };
+        Returns: undefined;
+      };
+      set_nickname: {
+        Args: { p_household_id: string; p_nickname: string };
         Returns: undefined;
       };
     };
     Enums: {
       category_type: "income" | "expense";
       household_role: "owner" | "member";
+      period_status: "open" | "closed";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -328,6 +381,7 @@ export const Constants = {
     Enums: {
       category_type: ["income", "expense"],
       household_role: ["owner", "member"],
+      period_status: ["open", "closed"],
     },
   },
 } as const;

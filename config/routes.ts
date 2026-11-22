@@ -1,6 +1,7 @@
 export const ROUTES = {
   home: "/",
   transactionsAdd: "/transactions/add",
+  periodsAdd: "/periods/add",
   history: "/history",
   report: "/report",
   budget: "/budget",

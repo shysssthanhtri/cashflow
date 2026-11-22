@@ -2,9 +2,12 @@ import { redirect } from "next/navigation";
 
 import { ROUTES } from "@/config/routes";
 import { getActiveHouseholdId } from "@/server/libs/households";
+import { getOpenPeriod } from "@/server/libs/periods";
 
 export default async function AddPage() {
-  if (!(await getActiveHouseholdId())) redirect(ROUTES.households);
+  const householdId = await getActiveHouseholdId();
+  if (!householdId) redirect(ROUTES.households);
+  if (!(await getOpenPeriod(householdId))) redirect(ROUTES.periodsAdd);
 
   return (
     <main className="p-6">

@@ -14,6 +14,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Put everything else in underscore-prefixed private folders next to the route that uses it: `_components/`, `_actions/` (server actions), `_schemas/` (zod schemas), `_lib/`.
 - Shared server-only helpers go in `server/libs/`.
 
+## UI components
+
+- Whenever implementing UI, consider using components from shadcn first (add via `pnpm dlx shadcn@latest add <component>`) before building custom ones.
+
 ## Loading states
 
 - Always show a skeleton (shadcn `Skeleton`) while loading: add a `loading.tsx` per route and use `Suspense` fallbacks / pending states for async UI. Never leave blank space or a bare spinner.
