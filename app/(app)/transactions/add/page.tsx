@@ -19,7 +19,7 @@ export default async function AddPage() {
 
   return (
     <main className="mx-auto max-w-md p-4">
-      <h1 className="px-2 pt-6 pb-4 text-3xl font-bold">Add transaction</h1>
+      <h1 className="px-2 pt-4 pb-4 text-3xl font-bold">Add transaction</h1>
       <div className="px-2">
         <TransactionForm
           categories={categories}

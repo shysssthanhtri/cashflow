@@ -13,7 +13,7 @@ export default async function HouseholdsPage() {
 
   return (
     <main className="mx-auto flex min-h-svh max-w-md flex-col gap-4 p-6">
-      <h1 className="text-lg font-medium">Choose a household</h1>
+      <h1 className="text-3xl font-bold">Choose a household</h1>
       <ul className="flex flex-col gap-2">
         {households.map((h) => (
           <li key={h.id}>

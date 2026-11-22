@@ -13,7 +13,7 @@ export default async function AddPeriodPage() {
 
   return (
     <main className="mx-auto max-w-md p-4">
-      <h1 className="px-2 pt-6 pb-2 text-3xl font-bold">Start a period</h1>
+      <h1 className="px-2 pt-4 pb-2 text-3xl font-bold">Start a period</h1>
       <p className="px-2 pb-4 text-sm text-muted-foreground">
         Create an open period before adding transactions.
       </p>
