@@ -27,7 +27,7 @@ export function HouseholdOption({
       }}
       aria-busy={pending}
       className={cn(
-        "flex items-center justify-between rounded-lg border p-4 transition hover:bg-muted active:scale-[0.98]",
+        "flex h-14 items-center justify-between rounded-lg border px-4 transition hover:bg-muted active:scale-[0.98]",
         pending && "pointer-events-none border-primary bg-muted opacity-70"
       )}
     >
