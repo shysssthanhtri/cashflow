@@ -1,6 +1,6 @@
 # TODOs
 
-- [ ] Define pages: add, history, report, budget, other
-- [ ] Navigation bar
+- [x] Navigation bar
+- [x] Define pages: add, history, report, budget, other
 - [ ] Define entities
 - [ ] Add page
