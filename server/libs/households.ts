@@ -37,3 +37,47 @@ export async function getActiveHouseholdId(): Promise<string | null> {
   const households = await listHouseholds();
   return households.some((h) => h.id === id) ? id : null;
 }
+
+export type HouseholdMember = {
+  id: string;
+  name: string;
+  email: string;
+  role: "owner" | "member";
+  joinedAt: string;
+};
+
+export type HouseholdDetail = HouseholdSummary & {
+  members: HouseholdMember[];
+};
+
+export async function getActiveHousehold(): Promise<HouseholdDetail | null> {
+  const id = await getActiveHouseholdId();
+  if (!id) return null;
+  const supabase = await createClient();
+  const { data: household } = await supabase
+    .from("households")
+    .select("id, name, currency")
+    .eq("id", id)
+    .single();
+  if (!household) return null;
+  const { data: memberships } = await supabase
+    .from("memberships")
+    .select("role, joined_at, profiles(id, name, email)")
+    .eq("household_id", id)
+    .order("joined_at");
+  const members = (memberships ?? []).flatMap((m) => {
+    const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+    return profile
+      ? [
+          {
+            id: profile.id,
+            name: profile.name,
+            email: profile.email,
+            role: m.role,
+            joinedAt: m.joined_at,
+          },
+        ]
+      : [];
+  });
+  return { ...household, members };
+}

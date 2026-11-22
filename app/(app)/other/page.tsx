@@ -19,8 +19,8 @@ const groups = [
       color: "bg-blue-500",
     },
     {
-      href: ROUTES.home,
-      label: "Home",
+      href: ROUTES.householdsSettings,
+      label: "Household",
       icon: HouseIcon,
       color: "bg-orange-500",
     },

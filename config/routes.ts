@@ -7,6 +7,7 @@ export const ROUTES = {
   other: "/other",
   profile: "/profile",
   appearance: "/appearance",
+  householdsSettings: "/households/settings",
   households: "/households",
   householdsAdd: "/households/add",
   householdsActivate: "/households/activate",
