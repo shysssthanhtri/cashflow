@@ -15,7 +15,7 @@ import { ROUTES } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { href: ROUTES.add, label: "Add", icon: PlusIcon },
+  { href: ROUTES.transactionsAdd, label: "Add", icon: PlusIcon },
   { href: ROUTES.history, label: "History", icon: HistoryIcon },
   { href: ROUTES.report, label: "Report", icon: ChartPieIcon },
   { href: ROUTES.budget, label: "Budget", icon: WalletIcon },

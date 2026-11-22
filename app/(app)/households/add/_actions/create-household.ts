@@ -36,5 +36,5 @@ export async function createHousehold(
   }
 
   await setActiveHousehold(data);
-  redirect(ROUTES.add);
+  redirect(ROUTES.transactionsAdd);
 }

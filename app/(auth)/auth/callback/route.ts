@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       }
       if (households.length === 1) {
         await setActiveHousehold(households[0].id);
-        return NextResponse.redirect(`${origin}${ROUTES.add}`);
+        return NextResponse.redirect(`${origin}${ROUTES.transactionsAdd}`);
       }
       return NextResponse.redirect(`${origin}${ROUTES.households}`);
     }

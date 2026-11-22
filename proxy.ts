@@ -7,7 +7,7 @@ import { updateSession } from "@/lib/supabase/proxy";
 export async function proxy(request: NextRequest) {
   const { device } = userAgent(request);
   if (request.nextUrl.pathname === ROUTES.home && device.type === "mobile") {
-    return NextResponse.redirect(new URL(ROUTES.add, request.url));
+    return NextResponse.redirect(new URL(ROUTES.transactionsAdd, request.url));
   }
 
   return updateSession(request);

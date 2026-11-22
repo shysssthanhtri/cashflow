@@ -35,5 +35,5 @@ export async function joinHousehold(
   }
 
   await setActiveHousehold(data);
-  redirect(ROUTES.add);
+  redirect(ROUTES.transactionsAdd);
 }
