@@ -1,0 +1,321 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { addTransaction } from "../_actions/add-transaction";
+import { extractAmount, parseAmount } from "../_lib/parse-amount";
+import {
+  NO_CATEGORY,
+  transactionSchema,
+  type TransactionValues,
+  validateOccurredAt,
+} from "../_schemas/transaction";
+
+type TxType = TransactionValues["type"];
+
+export type CategoryOption = { id: string; name: string; type: string };
+
+const TYPE_ITEMS = [
+  { label: "Expense", value: "expense" },
+  { label: "Income", value: "income" },
+];
+
+function toDateString(d: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function toDate(s: string) {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function toAmountText(token: string | null) {
+  const n = token ? parseAmount(token) : null;
+  return n === null ? "" : String(n);
+}
+
+export function TransactionForm({
+  categories,
+  periodStart,
+  currency,
+}: {
+  categories: CategoryOption[];
+  periodStart: string;
+  currency: string;
+}) {
+  const [pending, startTransition] = useTransition();
+  const [dateOpen, setDateOpen] = useState(false);
+  const [amountEdited, setAmountEdited] = useState(false);
+  const defaultValues: TransactionValues = {
+    note: "",
+    amount: "",
+    type: "expense",
+    categoryId: NO_CATEGORY,
+    occurredAt: toDateString(new Date()),
+  };
+  const form = useForm<TransactionValues>({
+    resolver: zodResolver(transactionSchema),
+    defaultValues,
+  });
+  const amountText = useWatch({ control: form.control, name: "amount" });
+  const parsedAmount = parseAmount(amountText);
+  const formatted =
+    parsedAmount === null
+      ? null
+      : new Intl.NumberFormat(undefined, {
+          style: "currency",
+          currency,
+        }).format(parsedAmount);
+  const categoryItems = [
+    { label: "No category", value: NO_CATEGORY },
+    ...categories.map((c) => ({ label: c.name, value: c.id })),
+  ];
+
+  function onSubmit(values: TransactionValues) {
+    const error = validateOccurredAt(
+      values.occurredAt,
+      periodStart,
+      toDateString(new Date())
+    );
+    if (error) {
+      form.setError("occurredAt", { message: error });
+      return;
+    }
+    startTransition(async () => {
+      const result = await addTransaction(values);
+      if (result.error) {
+        form.setError("root", { message: result.error });
+        return;
+      }
+      setAmountEdited(false);
+      form.reset({ ...defaultValues, type: values.type });
+      form.setFocus("note");
+    });
+  }
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <Controller
+          name="note"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="tx-note">Note</FieldLabel>
+              <Input
+                {...field}
+                id="tx-note"
+                placeholder="e.g. lunch 14k"
+                autoComplete="off"
+                autoFocus
+                aria-invalid={fieldState.invalid}
+                onChange={(e) => {
+                  field.onChange(e);
+                  if (!amountEdited) {
+                    form.setValue(
+                      "amount",
+                      toAmountText(extractAmount(e.target.value)),
+                      { shouldValidate: form.formState.isSubmitted }
+                    );
+                  }
+                }}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="amount"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="tx-amount">Amount ({currency})</FieldLabel>
+              <div className="relative">
+                <Input
+                  {...field}
+                  id="tx-amount"
+                  inputMode="decimal"
+                  placeholder="14.000"
+                  autoComplete="off"
+                  aria-invalid={fieldState.invalid}
+                  onChange={(e) => {
+                    setAmountEdited(e.target.value !== "");
+                    field.onChange(e);
+                  }}
+                  onBlur={() => {
+                    field.onBlur();
+                    const text = toAmountText(field.value);
+                    if (text) form.setValue("amount", text);
+                  }}
+                  className="pr-14"
+                />
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground">
+                  {currency}
+                </span>
+              </div>
+              {formatted && (
+                <p className="text-sm text-muted-foreground">{formatted}</p>
+              )}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="categoryId"
+          control={form.control}
+          render={({ field }) => (
+            <Field>
+              <FieldLabel htmlFor="tx-category">Category (optional)</FieldLabel>
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  const picked = categories.find((c) => c.id === value);
+                  if (picked) form.setValue("type", picked.type as TxType);
+                }}
+                items={categoryItems}
+              >
+                <SelectTrigger id="tx-category" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value={NO_CATEGORY}>No category</SelectItem>
+                  </SelectGroup>
+                  {TYPE_ITEMS.map((group) => (
+                    <SelectGroup key={group.value}>
+                      <SelectLabel>{group.label}</SelectLabel>
+                      {categories
+                        .filter((c) => c.type === group.value)
+                        .map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
+        />
+        <Controller
+          name="type"
+          control={form.control}
+          render={({ field }) => (
+            <Field>
+              <FieldLabel htmlFor="tx-type">Type</FieldLabel>
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  const current = categories.find(
+                    (c) => c.id === form.getValues("categoryId")
+                  );
+                  if (current && current.type !== value)
+                    form.setValue("categoryId", NO_CATEGORY);
+                }}
+                items={TYPE_ITEMS}
+              >
+                <SelectTrigger id="tx-type" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {TYPE_ITEMS.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
+        />
+        <Controller
+          name="occurredAt"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="tx-date">Date</FieldLabel>
+              <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                <PopoverTrigger
+                  render={
+                    <Button
+                      id="tx-date"
+                      type="button"
+                      variant="outline"
+                      aria-invalid={fieldState.invalid}
+                      className="w-full justify-start font-normal"
+                    />
+                  }
+                >
+                  <CalendarIcon />
+                  {field.value
+                    ? toDate(field.value).toLocaleDateString(undefined, {
+                        dateStyle: "medium",
+                      })
+                    : "Pick a date"}
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    required
+                    selected={field.value ? toDate(field.value) : undefined}
+                    defaultMonth={field.value ? toDate(field.value) : undefined}
+                    onSelect={(date) => {
+                      field.onChange(toDateString(date));
+                      setDateOpen(false);
+                    }}
+                    disabled={{
+                      before: toDate(periodStart),
+                      after: new Date(),
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        {form.formState.errors.root && (
+          <FieldError errors={[form.formState.errors.root]} />
+        )}
+        <Button type="submit" disabled={pending}>
+          Add transaction
+        </Button>
+      </FieldGroup>
+    </form>
+  );
+}

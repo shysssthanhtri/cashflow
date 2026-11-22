@@ -225,6 +225,75 @@ export type Database = {
         };
         Relationships: [];
       };
+      transactions: {
+        Row: {
+          amount: number;
+          category_id: string | null;
+          created_at: string;
+          created_by: string | null;
+          household_id: string;
+          id: string;
+          note: string | null;
+          occurred_at: string;
+          period_id: string;
+          type: Database["public"]["Enums"]["category_type"];
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          category_id?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          household_id: string;
+          id?: string;
+          note?: string | null;
+          occurred_at: string;
+          period_id: string;
+          type?: Database["public"]["Enums"]["category_type"];
+        };
+        Update: {
+          amount?: number;
+          category_id?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          household_id?: string;
+          id?: string;
+          note?: string | null;
+          occurred_at?: string;
+          period_id?: string;
+          type?: Database["public"]["Enums"]["category_type"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "transactions_category_id_household_id_fkey";
+            columns: ["category_id", "household_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id", "household_id"];
+          },
+          {
+            foreignKeyName: "transactions_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "transactions_household_id_fkey";
+            columns: ["household_id"];
+            isOneToOne: false;
+            referencedRelation: "households";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "transactions_period_id_household_id_fkey";
+            columns: ["period_id", "household_id"];
+            isOneToOne: false;
+            referencedRelation: "periods";
+            referencedColumns: ["id", "household_id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
