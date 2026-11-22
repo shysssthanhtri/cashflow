@@ -8,4 +8,6 @@ export const ROUTES = {
   profile: "/profile",
   appearance: "/appearance",
   logout: "/logout",
+  login: "/login",
+  authCallback: "/auth/callback",
 } as const;
