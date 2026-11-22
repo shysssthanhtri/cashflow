@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
+import { CategoryIcon } from "@/components/category-icon";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -33,7 +34,6 @@ import {
   type CategoryValues,
   NO_PARENT,
 } from "../_schemas/category";
-import { CategoryIcon } from "./category-icon";
 
 const TYPE_ITEMS = [
   { label: "Expense", value: "expense" },

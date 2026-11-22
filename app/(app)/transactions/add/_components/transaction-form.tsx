@@ -5,6 +5,7 @@ import { CalendarIcon } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
+import { CategoryBadge } from "@/components/category-badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -28,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 import { addTransaction } from "../_actions/add-transaction";
 import { extractAmount, parseAmount } from "../_lib/parse-amount";
@@ -40,7 +42,13 @@ import {
 
 type TxType = TransactionValues["type"];
 
-export type CategoryOption = { id: string; name: string; type: string };
+export type CategoryOption = {
+  id: string;
+  name: string;
+  type: string;
+  icon: string;
+  color: string;
+};
 
 const TYPE_ITEMS = [
   { label: "Expense", value: "expense" },
@@ -64,10 +72,12 @@ function toAmountText(token: string | null) {
 
 export function TransactionForm({
   categories,
+  topCategoryIds,
   periodStart,
   currency,
 }: {
   categories: CategoryOption[];
+  topCategoryIds: string[];
   periodStart: string;
   currency: string;
 }) {
@@ -86,6 +96,7 @@ export function TransactionForm({
     defaultValues,
   });
   const amountText = useWatch({ control: form.control, name: "amount" });
+  const categoryId = useWatch({ control: form.control, name: "categoryId" });
   const parsedAmount = parseAmount(amountText);
   const formatted =
     parsedAmount === null
@@ -98,6 +109,12 @@ export function TransactionForm({
     { label: "No category", value: NO_CATEGORY },
     ...categories.map((c) => ({ label: c.name, value: c.id })),
   ];
+  const topCategories = topCategoryIds
+    .map((id) => categories.find((c) => c.id === id))
+    .filter((c): c is CategoryOption => !!c);
+  const otherCategories = categories.filter(
+    (c) => !topCategories.some((t) => t.id === c.id)
+  );
 
   function onSubmit(values: TransactionValues) {
     const error = validateOccurredAt(
@@ -191,53 +208,89 @@ export function TransactionForm({
         <Controller
           name="categoryId"
           control={form.control}
-          render={({ field }) => (
-            <Field>
-              <FieldLabel htmlFor="tx-category">Category (optional)</FieldLabel>
-              <Select
-                name={field.name}
-                value={field.value}
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  const picked = categories.find((c) => c.id === value);
-                  if (picked) form.setValue("type", picked.type as TxType);
-                }}
-                items={categoryItems}
-              >
-                <SelectTrigger id="tx-category" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value={NO_CATEGORY}>No category</SelectItem>
-                  </SelectGroup>
-                  {TYPE_ITEMS.map((group) => (
-                    <SelectGroup key={group.value}>
-                      <SelectLabel>{group.label}</SelectLabel>
-                      {categories
-                        .filter((c) => c.type === group.value)
-                        .map((c) => (
-                          <SelectItem key={c.id} value={c.id}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-          )}
+          render={({ field }) => {
+            const selectCategory = (value: string) => {
+              field.onChange(value);
+              const picked = categories.find((c) => c.id === value);
+              if (picked) form.setValue("type", picked.type as TxType);
+            };
+            const extra = otherCategories.find((c) => c.id === field.value);
+            const badgeCategories = extra
+              ? [...topCategories, extra]
+              : topCategories;
+            return (
+              <Field>
+                <FieldLabel>Category (optional)</FieldLabel>
+                <div className="flex flex-wrap gap-2">
+                  {badgeCategories.map((c) => {
+                    const selected = field.value === c.id;
+                    return (
+                      <CategoryBadge
+                        key={c.id}
+                        icon={c.icon}
+                        color={c.color}
+                        selected={selected}
+                        className="cursor-pointer"
+                        render={
+                          <button
+                            type="button"
+                            aria-pressed={selected}
+                            onClick={() =>
+                              selectCategory(selected ? NO_CATEGORY : c.id)
+                            }
+                          />
+                        }
+                      >
+                        {c.name}
+                      </CategoryBadge>
+                    );
+                  })}
+                </div>
+                {otherCategories.length > 0 && (
+                  <Select
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={(value) => selectCategory(value as string)}
+                    items={categoryItems}
+                  >
+                    <SelectTrigger id="tx-category" className="w-full">
+                      <SelectValue placeholder="More categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value={NO_CATEGORY}>No category</SelectItem>
+                      </SelectGroup>
+                      {TYPE_ITEMS.map((group) => (
+                        <SelectGroup key={group.value}>
+                          <SelectLabel>{group.label}</SelectLabel>
+                          {otherCategories
+                            .filter((c) => c.type === group.value)
+                            .map((c) => (
+                              <SelectItem key={c.id} value={c.id}>
+                                {c.name}
+                              </SelectItem>
+                            ))}
+                        </SelectGroup>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </Field>
+            );
+          }}
         />
         <Controller
           name="type"
           control={form.control}
           render={({ field }) => (
-            <Field>
-              <FieldLabel htmlFor="tx-type">Type</FieldLabel>
-              <Select
+            <Field orientation="horizontal" className="w-fit">
+              <Switch
+                id="tx-type"
                 name={field.name}
-                value={field.value}
-                onValueChange={(value) => {
+                checked={field.value === "income"}
+                disabled={categoryId !== NO_CATEGORY}
+                onCheckedChange={(checked) => {
+                  const value: TxType = checked ? "income" : "expense";
                   field.onChange(value);
                   const current = categories.find(
                     (c) => c.id === form.getValues("categoryId")
@@ -245,21 +298,15 @@ export function TransactionForm({
                   if (current && current.type !== value)
                     form.setValue("categoryId", NO_CATEGORY);
                 }}
-                items={TYPE_ITEMS}
+              />
+              <FieldLabel
+                htmlFor="tx-type"
+                className={
+                  categoryId === NO_CATEGORY ? "cursor-pointer" : undefined
+                }
               >
-                <SelectTrigger id="tx-type" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {TYPE_ITEMS.map((item) => (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+                {field.value === "income" ? "Income" : "Expense"}
+              </FieldLabel>
             </Field>
           )}
         />

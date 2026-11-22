@@ -2,12 +2,11 @@ import { ChevronLeftIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { CategoryBadge } from "@/components/category-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { type Category, listCategories } from "@/server/libs/categories";
 import { getActiveHouseholdId } from "@/server/libs/households";
-
-import { CategoryIcon } from "./_components/category-icon";
 
 const TYPES = [
   { type: "expense", label: "Expense" },
@@ -39,20 +38,13 @@ function CategoryGroup({
         <ul className="flex flex-wrap gap-2 px-2">
           {sorted.map((c) => (
             <li key={c.id}>
-              <Link
-                href={ROUTES.householdsCategoryEdit(c.id)}
-                className="flex items-center gap-1.5 rounded-full py-1 pr-3 pl-2 text-sm"
-                style={{ backgroundColor: `${c.color}26`, color: c.color }}
+              <CategoryBadge
+                icon={c.icon}
+                color={c.color}
+                render={<Link href={ROUTES.householdsCategoryEdit(c.id)} />}
               >
-                <CategoryIcon
-                  icon={c.icon}
-                  color={c.color}
-                  className="size-5 bg-transparent [&_svg]:size-3.5"
-                />
-                <span className="text-foreground">
-                  {c.parentId ? `${nameOf(c.parentId)} / ${c.name}` : c.name}
-                </span>
-              </Link>
+                {c.parentId ? `${nameOf(c.parentId)} / ${c.name}` : c.name}
+              </CategoryBadge>
             </li>
           ))}
         </ul>

@@ -1,6 +1,8 @@
+import {
+  CATEGORY_ICONS,
+  DEFAULT_CATEGORY_ICON,
+} from "@/app/(app)/households/categories/_lib/category-style";
 import { cn } from "@/lib/utils";
-
-import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from "../_lib/category-style";
 
 export function CategoryIcon({
   icon,

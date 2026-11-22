@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { ROUTES } from "@/config/routes";
-import { listCategories } from "@/server/libs/categories";
+import { listCategories, listTopCategoryIds } from "@/server/libs/categories";
 import {
   getActiveHousehold,
   getActiveHouseholdId,
@@ -16,7 +16,10 @@ export default async function AddPage() {
   const period = await getOpenPeriod(householdId);
   if (!period) redirect(ROUTES.periodsAdd);
   const household = await getActiveHousehold();
-  const categories = await listCategories(householdId);
+  const [categories, topCategoryIds] = await Promise.all([
+    listCategories(householdId),
+    listTopCategoryIds(householdId),
+  ]);
 
   return (
     <main className="mx-auto max-w-md p-4">
@@ -24,6 +27,7 @@ export default async function AddPage() {
       <div className="px-2">
         <TransactionForm
           categories={categories}
+          topCategoryIds={topCategoryIds}
           periodStart={period.startDate}
           currency={household?.currency ?? "VND"}
         />
