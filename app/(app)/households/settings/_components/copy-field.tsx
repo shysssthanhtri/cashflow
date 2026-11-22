@@ -16,7 +16,7 @@ export function CopyField({ value }: { value: string }) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="font-mono">{value}</span>
+      <span className="font-mono text-muted-foreground">{value}</span>
       <Button
         type="button"
         variant="ghost"

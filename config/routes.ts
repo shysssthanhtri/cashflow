@@ -8,6 +8,7 @@ export const ROUTES = {
   profile: "/profile",
   appearance: "/appearance",
   householdsSettings: "/households/settings",
+  householdsEdit: (id: string) => `/households/${id}/edit`,
   householdsMembers: "/households/members",
   householdsCategories: "/households/categories",
   householdsCategoryEdit: (id: string) => `/households/categories/${id}/edit`,

@@ -113,6 +113,7 @@ export type Database = {
           household_id: string;
           id: string;
           joined_at: string;
+          nickname: string | null;
           role: Database["public"]["Enums"]["household_role"];
           user_id: string;
         };
@@ -121,6 +122,7 @@ export type Database = {
           household_id: string;
           id?: string;
           joined_at?: string;
+          nickname?: string | null;
           role?: Database["public"]["Enums"]["household_role"];
           user_id: string;
         };
@@ -128,6 +130,7 @@ export type Database = {
           household_id?: string;
           id?: string;
           joined_at?: string;
+          nickname?: string | null;
           role?: Database["public"]["Enums"]["household_role"];
           user_id?: string;
         };
@@ -181,6 +184,10 @@ export type Database = {
       };
       join_household: { Args: { p_invite_code: string }; Returns: string };
       leave_household: { Args: { p_household_id: string }; Returns: undefined };
+      set_nickname: {
+        Args: { p_household_id: string; p_nickname: string };
+        Returns: undefined;
+      };
       promote_member: {
         Args: { p_household_id: string; p_user_id: string };
         Returns: undefined;

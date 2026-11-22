@@ -46,6 +46,7 @@ export async function getActiveHouseholdId(): Promise<string | null> {
 export type HouseholdMember = {
   id: string;
   name: string;
+  nickname: string | null;
   email: string;
   role: "owner" | "member";
   joinedAt: string;
@@ -70,7 +71,7 @@ export async function getActiveHousehold(): Promise<HouseholdDetail | null> {
   if (!household) return null;
   const { data: memberships } = await supabase
     .from("memberships")
-    .select("role, joined_at, profiles(id, name, email)")
+    .select("role, joined_at, nickname, profiles(id, name, email)")
     .eq("household_id", id)
     .order("joined_at");
   const members = (memberships ?? []).flatMap((m) => {
@@ -79,7 +80,8 @@ export async function getActiveHousehold(): Promise<HouseholdDetail | null> {
       ? [
           {
             id: profile.id,
-            name: profile.name,
+            name: m.nickname ?? profile.name,
+            nickname: m.nickname,
             email: profile.email,
             role: m.role,
             joinedAt: m.joined_at,

@@ -17,6 +17,9 @@ export default async function HouseholdSettingsPage() {
   if (!household) redirect(ROUTES.households);
 
   const ownerCount = household.members.filter((m) => m.role === "owner").length;
+  const myNickname = household.members.find(
+    (m) => m.id === household.currentUserId
+  )?.nickname;
   const canLeave = !household.isOwner || ownerCount > 1;
 
   return (
@@ -33,22 +36,40 @@ export default async function HouseholdSettingsPage() {
         <dl className="overflow-hidden rounded-xl bg-muted/50 ring-1 ring-foreground/5">
           <div className="flex justify-between border-b border-border/60 px-4 py-3">
             <dt className="text-muted-foreground">Name</dt>
-            <dd>{household.name}</dd>
+            <dd>
+              <Link
+                href={ROUTES.householdsEdit(household.id)}
+                className="flex items-center gap-1 font-medium text-primary underline-offset-4 hover:underline"
+              >
+                {household.name}
+                <ChevronRightIcon className="size-4 text-muted-foreground" />
+              </Link>
+            </dd>
           </div>
-          <div
-            className={`flex justify-between px-4 py-3 ${household.inviteCode ? "border-b border-border/60" : ""}`}
-          >
+          <div className="flex justify-between border-b border-border/60 px-4 py-3">
             <dt className="text-muted-foreground">Currency</dt>
-            <dd>{household.currency}</dd>
+            <dd className="text-muted-foreground">{household.currency}</dd>
           </div>
           {household.inviteCode && (
-            <div className="flex items-center justify-between gap-3 px-4 py-2">
+            <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2">
               <dt className="text-muted-foreground">Invite code</dt>
               <dd>
                 <CopyField value={household.inviteCode} />
               </dd>
             </div>
           )}
+          <div className="flex justify-between px-4 py-3">
+            <dt className="text-muted-foreground">Nickname</dt>
+            <dd>
+              <Link
+                href={ROUTES.householdsEdit(household.id)}
+                className={`flex items-center gap-1 underline-offset-4 hover:underline ${myNickname ? "font-medium text-primary" : "text-muted-foreground"}`}
+              >
+                {myNickname ?? "Not set"}
+                <ChevronRightIcon className="size-4 text-muted-foreground" />
+              </Link>
+            </dd>
+          </div>
         </dl>
         <nav className="overflow-hidden rounded-xl bg-muted/50 ring-1 ring-foreground/5">
           <Link
