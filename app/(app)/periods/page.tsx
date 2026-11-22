@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { CategoryBadge } from "@/components/category-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { ROUTES } from "@/config/routes";
 import { listCategories } from "@/server/libs/categories";
@@ -127,15 +128,17 @@ async function OpenPeriod({
                     />
                     <div className="flex min-w-0 flex-1 items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="truncate text-sm">
-                          {t.note ?? category?.name ?? "Transaction"}
-                        </p>
-                        {category && t.note && (
-                          <p className="truncate text-xs text-muted-foreground">
+                        {t.note && <p className="truncate text-sm">{t.note}</p>}
+                        {category && (
+                          <CategoryBadge
+                            icon={category.icon}
+                            color={category.color}
+                            className={`gap-1 py-0.5 pr-2 pl-1.5 text-xs [&_svg]:size-3! [&>span:first-child]:size-4! ${t.note ? "mt-1" : ""}`}
+                          >
                             {parent
                               ? `${parent.name} / ${category.name}`
                               : category.name}
-                          </p>
+                          </CategoryBadge>
                         )}
                       </div>
                       <span
