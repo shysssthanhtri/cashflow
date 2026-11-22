@@ -17,3 +17,18 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Loading states
 
 - Always show a skeleton (shadcn `Skeleton`) while loading: add a `loading.tsx` per route and use `Suspense` fallbacks / pending states for async UI. Never leave blank space or a bare spinner.
+
+## Page paths
+
+For each resource's route folder:
+
+- `/add` — create page
+- `/` — list page
+- `/{id}` — details page
+- `/{id}/edit` — edit page
+
+(Resource-specific details to be filled in later.)
+
+## Database
+
+- Only run `pnpm db:push` to apply schema changes. Never run `pnpm db:reset`, even locally.

@@ -10,6 +10,8 @@ export const ROUTES = {
   householdsSettings: "/households/settings",
   householdsMembers: "/households/members",
   householdsCategories: "/households/categories",
+  householdsCategoryEdit: (id: string) => `/households/categories/${id}/edit`,
+  householdsCategoriesAdd: "/households/categories/add",
   households: "/households",
   householdsAdd: "/households/add",
   householdsActivate: "/households/activate",

@@ -34,6 +34,55 @@ export type Database = {
   };
   public: {
     Tables: {
+      categories: {
+        Row: {
+          archived_at: string | null;
+          color: string;
+          household_id: string;
+          icon: string;
+          id: string;
+          name: string;
+          parent_id: string | null;
+          type: Database["public"]["Enums"]["category_type"];
+        };
+        ComputedFields: never;
+        Insert: {
+          archived_at?: string | null;
+          color?: string;
+          household_id: string;
+          icon?: string;
+          id?: string;
+          name: string;
+          parent_id?: string | null;
+          type: Database["public"]["Enums"]["category_type"];
+        };
+        Update: {
+          archived_at?: string | null;
+          color?: string;
+          household_id?: string;
+          icon?: string;
+          id?: string;
+          name?: string;
+          parent_id?: string | null;
+          type?: Database["public"]["Enums"]["category_type"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "categories_household_id_fkey";
+            columns: ["household_id"];
+            isOneToOne: false;
+            referencedRelation: "households";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "categories_parent_id_fkey";
+            columns: ["parent_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       households: {
         Row: {
           created_at: string;
@@ -130,20 +179,15 @@ export type Database = {
         Args: { p_currency?: string; p_name: string };
         Returns: string;
       };
-      join_household: {
-        Args: { p_invite_code: string };
-        Returns: string;
-      };
-      leave_household: {
-        Args: { p_household_id: string };
-        Returns: undefined;
-      };
+      join_household: { Args: { p_invite_code: string }; Returns: string };
+      leave_household: { Args: { p_household_id: string }; Returns: undefined };
       promote_member: {
         Args: { p_household_id: string; p_user_id: string };
         Returns: undefined;
       };
     };
     Enums: {
+      category_type: "income" | "expense";
       household_role: "owner" | "member";
     };
     CompositeTypes: {
@@ -275,6 +319,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      category_type: ["income", "expense"],
       household_role: ["owner", "member"],
     },
   },
