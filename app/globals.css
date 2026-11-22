@@ -130,4 +130,12 @@
   html {
     @apply font-sans;
   }
+  /* iOS Safari zooms into focused fields with font-size < 16px */
+  @media (hover: none) and (pointer: coarse) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
 }
