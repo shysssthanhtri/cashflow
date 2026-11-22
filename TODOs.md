@@ -5,7 +5,7 @@
 - [x] Define entities
 - [x] Supabase
 - [x] Migration
-- [ ] Home
+- [x] Home
 - [ ] settings - home - categories
 - [ ] Add page
 - [ ] i18n

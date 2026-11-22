@@ -30,6 +30,11 @@ export async function setActiveHousehold(id: string) {
   });
 }
 
+export async function clearActiveHousehold() {
+  const cookieStore = await cookies();
+  cookieStore.delete(ACTIVE_HOUSEHOLD_COOKIE);
+}
+
 export async function getActiveHouseholdId(): Promise<string | null> {
   const cookieStore = await cookies();
   const id = cookieStore.get(ACTIVE_HOUSEHOLD_COOKIE)?.value;
@@ -47,6 +52,9 @@ export type HouseholdMember = {
 };
 
 export type HouseholdDetail = HouseholdSummary & {
+  inviteCode: string | null;
+  currentUserId: string | null;
+  isOwner: boolean;
   members: HouseholdMember[];
 };
 
@@ -56,7 +64,7 @@ export async function getActiveHousehold(): Promise<HouseholdDetail | null> {
   const supabase = await createClient();
   const { data: household } = await supabase
     .from("households")
-    .select("id, name, currency")
+    .select("id, name, currency, invite_code")
     .eq("id", id)
     .single();
   if (!household) return null;
@@ -79,5 +87,17 @@ export async function getActiveHousehold(): Promise<HouseholdDetail | null> {
         ]
       : [];
   });
-  return { ...household, members };
+  const { data: claims } = await supabase.auth.getClaims();
+  const currentUserId = claims?.claims?.sub ?? null;
+  const isOwner = members.some(
+    (m) => m.id === currentUserId && m.role === "owner"
+  );
+  const { invite_code, ...summary } = household;
+  return {
+    ...summary,
+    inviteCode: invite_code,
+    currentUserId,
+    isOwner,
+    members,
+  };
 }

@@ -130,6 +130,18 @@ export type Database = {
         Args: { p_currency?: string; p_name: string };
         Returns: string;
       };
+      join_household: {
+        Args: { p_invite_code: string };
+        Returns: string;
+      };
+      leave_household: {
+        Args: { p_household_id: string };
+        Returns: undefined;
+      };
+      promote_member: {
+        Args: { p_household_id: string; p_user_id: string };
+        Returns: undefined;
+      };
     };
     Enums: {
       household_role: "owner" | "member";

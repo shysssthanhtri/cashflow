@@ -1,0 +1,31 @@
+"use client";
+
+import { CheckIcon, CopyIcon } from "lucide-react";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+
+export function CopyField({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy() {
+    await navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="font-mono">{value}</span>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={copy}
+        aria-label="Copy invite code"
+      >
+        {copied ? <CheckIcon /> : <CopyIcon />}
+      </Button>
+    </div>
+  );
+}
