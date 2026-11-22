@@ -25,6 +25,6 @@ export async function promoteMember(
     return { error: "Could not make this member an owner." };
   }
 
-  revalidatePath(ROUTES.householdsSettings);
+  revalidatePath(ROUTES.householdsMembers);
   return {};
 }

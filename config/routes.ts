@@ -8,6 +8,8 @@ export const ROUTES = {
   profile: "/profile",
   appearance: "/appearance",
   householdsSettings: "/households/settings",
+  householdsMembers: "/households/members",
+  householdsCategories: "/households/categories",
   households: "/households",
   householdsAdd: "/households/add",
   householdsActivate: "/households/activate",
