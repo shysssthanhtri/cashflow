@@ -13,3 +13,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Inside `app/`, only routable files (`page`, `layout`, `route`, `loading`, `error`, etc.) live directly in a route folder.
 - Put everything else in underscore-prefixed private folders next to the route that uses it: `_components/`, `_actions/` (server actions), `_schemas/` (zod schemas), `_lib/`.
 - Shared server-only helpers go in `server/libs/`.
+
+## Loading states
+
+- Always show a skeleton (shadcn `Skeleton`) while loading: add a `loading.tsx` per route and use `Suspense` fallbacks / pending states for async UI. Never leave blank space or a bare spinner.
