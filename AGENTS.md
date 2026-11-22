@@ -7,3 +7,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## App folder structure
+
+- Inside `app/`, only routable files (`page`, `layout`, `route`, `loading`, `error`, etc.) live directly in a route folder.
+- Put everything else in underscore-prefixed private folders next to the route that uses it: `_components/`, `_actions/` (server actions), `_schemas/` (zod schemas), `_lib/`.
+- Shared server-only helpers go in `server/libs/`.
