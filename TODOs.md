@@ -6,6 +6,6 @@
 - [x] Supabase
 - [x] Migration
 - [x] Home
-- [ ] settings - home - categories
+- [x] settings - home - categories
 - [ ] Add page
 - [ ] i18n
