@@ -42,7 +42,7 @@ export function MobileNav() {
                   buttonVariants({ variant: "ghost" }),
                   "h-auto w-full flex-col gap-0.5 rounded-full py-1.5 text-[10px]",
                   active
-                    ? "bg-foreground/10 text-foreground"
+                    ? "bg-primary/10 text-primary"
                     : "text-muted-foreground"
                 )}
               >
