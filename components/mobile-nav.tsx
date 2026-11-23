@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 const items = [
   { href: ROUTES.transactionsAdd, label: "Add", icon: PlusIcon },
-  { href: ROUTES.periods, label: "History", icon: HistoryIcon },
+  { href: ROUTES.transactions, label: "History", icon: HistoryIcon },
   { href: ROUTES.report, label: "Report", icon: ChartPieIcon },
   { href: ROUTES.budget, label: "Budget", icon: WalletIcon },
   { href: ROUTES.other, label: "Other", icon: MenuIcon },
@@ -24,6 +24,9 @@ const items = [
 
 export function MobileNav() {
   const pathname = usePathname();
+  const activeHref = items
+    .filter(({ href }) => pathname === href || pathname.startsWith(`${href}/`))
+    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   return (
     <nav
@@ -32,7 +35,7 @@ export function MobileNav() {
     >
       <ul className="flex items-center justify-between">
         {items.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`);
+          const active = href === activeHref;
           return (
             <li key={href} className="flex-1">
               <Link

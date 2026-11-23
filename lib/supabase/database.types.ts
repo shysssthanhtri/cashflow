@@ -151,58 +151,6 @@ export type Database = {
           },
         ];
       };
-      periods: {
-        Row: {
-          closed_at: string | null;
-          closed_by: string | null;
-          created_at: string;
-          end_date: string | null;
-          household_id: string;
-          id: string;
-          name: string | null;
-          start_date: string;
-          status: Database["public"]["Enums"]["period_status"];
-        };
-        ComputedFields: never;
-        Insert: {
-          closed_at?: string | null;
-          closed_by?: string | null;
-          created_at?: string;
-          end_date?: string | null;
-          household_id: string;
-          id?: string;
-          name?: string | null;
-          start_date: string;
-          status?: Database["public"]["Enums"]["period_status"];
-        };
-        Update: {
-          closed_at?: string | null;
-          closed_by?: string | null;
-          created_at?: string;
-          end_date?: string | null;
-          household_id?: string;
-          id?: string;
-          name?: string | null;
-          start_date?: string;
-          status?: Database["public"]["Enums"]["period_status"];
-        };
-        Relationships: [
-          {
-            foreignKeyName: "periods_closed_by_fkey";
-            columns: ["closed_by"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "periods_household_id_fkey";
-            columns: ["household_id"];
-            isOneToOne: false;
-            referencedRelation: "households";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       profiles: {
         Row: {
           created_at: string;
@@ -235,7 +183,6 @@ export type Database = {
           id: string;
           note: string | null;
           occurred_at: string;
-          period_id: string;
           type: Database["public"]["Enums"]["category_type"];
         };
         ComputedFields: never;
@@ -248,7 +195,6 @@ export type Database = {
           id?: string;
           note?: string | null;
           occurred_at: string;
-          period_id: string;
           type?: Database["public"]["Enums"]["category_type"];
         };
         Update: {
@@ -260,7 +206,6 @@ export type Database = {
           id?: string;
           note?: string | null;
           occurred_at?: string;
-          period_id?: string;
           type?: Database["public"]["Enums"]["category_type"];
         };
         Relationships: [
@@ -284,13 +229,6 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "households";
             referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "transactions_period_id_household_id_fkey";
-            columns: ["period_id", "household_id"];
-            isOneToOne: false;
-            referencedRelation: "periods";
-            referencedColumns: ["id", "household_id"];
           },
         ];
       };
@@ -317,7 +255,6 @@ export type Database = {
     Enums: {
       category_type: "income" | "expense";
       household_role: "owner" | "member";
-      period_status: "open" | "closed";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -450,7 +387,6 @@ export const Constants = {
     Enums: {
       category_type: ["income", "expense"],
       household_role: ["owner", "member"],
-      period_status: ["open", "closed"],
     },
   },
 } as const;

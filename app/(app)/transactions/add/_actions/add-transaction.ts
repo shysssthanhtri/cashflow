@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import { ROUTES } from "@/config/routes";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveHouseholdId } from "@/server/libs/households";
-import { getOpenPeriod } from "@/server/libs/periods";
 
 import { parseAmount } from "../_lib/parse-amount";
 import {
@@ -32,14 +31,7 @@ export async function addTransaction(
   const householdId = await getActiveHouseholdId();
   if (!householdId) return { error: "No active household." };
 
-  const period = await getOpenPeriod(householdId);
-  if (!period) return { error: "There is no open period." };
-
-  const dateError = validateOccurredAt(
-    occurredAt,
-    period.startDate,
-    latestToday()
-  );
+  const dateError = validateOccurredAt(occurredAt, latestToday());
   if (dateError) return { error: dateError };
 
   const supabase = await createClient();
@@ -62,7 +54,6 @@ export async function addTransaction(
 
   const { error } = await supabase.from("transactions").insert({
     household_id: householdId,
-    period_id: period.id,
     category_id: categoryId === NO_CATEGORY ? null : categoryId,
     type,
     amount,
@@ -78,6 +69,6 @@ export async function addTransaction(
     return { error: "Could not add transaction." };
   }
 
-  revalidatePath(ROUTES.periods, "layout");
+  revalidatePath(ROUTES.transactions, "layout");
   return {};
 }

@@ -7,6 +7,5 @@
 - [x] Migration
 - [x] Home
 - [x] settings - home - categories
-- [ ] period
 - [ ] Add page
 - [ ] i18n

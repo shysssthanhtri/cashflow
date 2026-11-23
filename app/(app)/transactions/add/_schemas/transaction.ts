@@ -16,14 +16,8 @@ export const transactionSchema = z.object({
 
 export type TransactionValues = z.infer<typeof transactionSchema>;
 
-// Returns an error message when the date is outside [periodStart, today].
-export function validateOccurredAt(
-  occurredAt: string,
-  periodStart: string,
-  today: string
-) {
-  if (occurredAt < periodStart)
-    return "Date can't be before the open period starts.";
+// Returns an error message when the date is in the future.
+export function validateOccurredAt(occurredAt: string, today: string) {
   if (occurredAt > today) return "Date can't be in the future.";
   return null;
 }

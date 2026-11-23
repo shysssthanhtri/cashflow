@@ -73,12 +73,10 @@ function toAmountText(token: string | null) {
 export function TransactionForm({
   categories,
   topCategoryIds,
-  periodStart,
   currency,
 }: {
   categories: CategoryOption[];
   topCategoryIds: string[];
-  periodStart: string;
   currency: string;
 }) {
   const [pending, startTransition] = useTransition();
@@ -119,7 +117,6 @@ export function TransactionForm({
   function onSubmit(values: TransactionValues) {
     const error = validateOccurredAt(
       values.occurredAt,
-      periodStart,
       toDateString(new Date())
     );
     if (error) {
@@ -346,7 +343,6 @@ export function TransactionForm({
                       setDateOpen(false);
                     }}
                     disabled={{
-                      before: toDate(periodStart),
                       after: new Date(),
                     }}
                   />

@@ -1,9 +1,7 @@
 export const ROUTES = {
   home: "/",
+  transactions: "/transactions",
   transactionsAdd: "/transactions/add",
-  periodsAdd: "/periods/add",
-  periods: "/periods",
-  period: (id: string) => `/periods/${id}`,
   report: "/report",
   budget: "/budget",
   other: "/other",

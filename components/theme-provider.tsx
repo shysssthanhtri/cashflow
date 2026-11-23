@@ -13,6 +13,11 @@ function ThemeProvider({
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
+      // React 19 warns about executable scripts rendered on the client; the
+      // inline script only needs to run from the server-rendered HTML.
+      scriptProps={{
+        type: typeof window === "undefined" ? undefined : "application/json",
+      }}
       {...props}
     >
       <ThemeHotkey />

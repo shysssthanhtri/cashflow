@@ -12,8 +12,7 @@ PostgreSQL schema for the household finance app, hosted on **Supabase** (local v
 - **Household**: a family or home that shares finances.
 - **Membership**: links a profile to a household, with a role.
 - **Category**: tag for transactions (e.g. Food, Salary). Belongs to a household, supports one level of nesting.
-- **Period**: a custom budget cycle (e.g. salary day to salary day). Can be opened and closed.
-- **Transaction**: an income or expense entry within a period.
+- **Transaction**: an income or expense entry for a household.
 
 ## SQL
 

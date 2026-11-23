@@ -1,27 +1,14 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { CategoryBadge } from "@/components/category-badge";
 import { ROUTES } from "@/config/routes";
 import { listCategories } from "@/server/libs/categories";
 import { getActiveHouseholdId } from "@/server/libs/households";
-import { listPeriods, type PeriodSummary } from "@/server/libs/periods";
-import { listPeriodTransactions } from "@/server/libs/transactions";
-
-import {
-  type PeriodOption,
-  PeriodSelector,
-} from "./_components/period-selector";
+import { listTransactions } from "@/server/libs/transactions";
 
 const amountFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
-});
-
-const shortDate = new Intl.DateTimeFormat(undefined, {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
 });
 
 const dateFormat = new Intl.DateTimeFormat(undefined, {
@@ -32,37 +19,14 @@ const dateFormat = new Intl.DateTimeFormat(undefined, {
   timeZone: "UTC",
 });
 
-const rangeLabel = (p: { startDate: string; endDate: string | null }) =>
-  `${shortDate.format(new Date(`${p.startDate}T00:00:00Z`))} – ${
-    p.endDate ? shortDate.format(new Date(`${p.endDate}T00:00:00Z`)) : "now"
-  }`;
-
-export default async function PeriodPage({
-  params,
-}: {
-  params: Promise<{ periodId: string }>;
-}) {
-  const { periodId } = await params;
+export default async function TransactionsPage() {
   const householdId = await getActiveHouseholdId();
   if (!householdId) redirect(ROUTES.households);
 
-  const periods = await listPeriods(householdId);
-  const period = periods.find((p) => p.id === periodId);
-  if (!period) notFound();
-
-  const options = periods.map((p) => ({
-    value: p.id,
-    label: `${rangeLabel(p)}${p.status === "open" ? " (open)" : ""}`,
-  }));
-
   return (
     <main className="mx-auto flex h-[calc(100dvh-7rem)] max-w-md flex-col p-4 md:h-dvh">
-      <h1 className="px-2 pt-4 pb-4 text-3xl font-bold">Periods</h1>
-      <PeriodDetails
-        householdId={householdId}
-        period={period}
-        options={options}
-      />
+      <h1 className="px-2 pt-4 pb-4 text-3xl font-bold">History</h1>
+      <TransactionList householdId={householdId} />
     </main>
   );
 }
@@ -70,17 +34,9 @@ export default async function PeriodPage({
 const signed = (n: number) =>
   `${n < 0 ? "-" : "+"}${amountFormat.format(Math.abs(n))}`;
 
-async function PeriodDetails({
-  householdId,
-  period,
-  options,
-}: {
-  householdId: string;
-  period: PeriodSummary;
-  options: PeriodOption[];
-}) {
+async function TransactionList({ householdId }: { householdId: string }) {
   const [transactions, categories] = await Promise.all([
-    listPeriodTransactions(period.id),
+    listTransactions(householdId),
     listCategories(householdId),
   ]);
   const categoryOf = (id: string | null) => categories.find((c) => c.id === id);
@@ -101,7 +57,6 @@ async function PeriodDetails({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
-      <PeriodSelector value={period.id} options={options} />
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
         <dl className="grid shrink-0 grid-cols-3 divide-x border-b">
           {[
