@@ -7,5 +7,7 @@
 - [x] Migration
 - [x] Home
 - [x] settings - home - categories
-- [ ] Add page
+- [x] Add page
+- [ ] report page
+- [ ] budget page
 - [ ] i18n
