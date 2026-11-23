@@ -39,10 +39,12 @@ const SWIPE_DISTANCE = 60;
 export function MonthSelector({
   month,
   currentMonth,
+  basePath = ROUTES.transactions,
   children,
 }: {
   month: string;
   currentMonth: string;
+  basePath?: string;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -97,7 +99,7 @@ export function MonthSelector({
   }, [month]);
 
   function go(target: string) {
-    router.push(`${ROUTES.transactions}?month=${target}`);
+    router.push(`${basePath}?month=${target}`);
   }
 
   function onTouchEnd(e: React.TouchEvent) {
