@@ -38,6 +38,7 @@ import {
 const TYPE_ITEMS = [
   { label: "Expense", value: "expense" },
   { label: "Income", value: "income" },
+  { label: "Saving", value: "saving" },
 ];
 
 export type ParentOption = { id: string; name: string; type: string };

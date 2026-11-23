@@ -330,7 +330,7 @@ export type Database = {
       };
     };
     Enums: {
-      category_type: "income" | "expense";
+      category_type: "income" | "expense" | "saving";
       household_role: "owner" | "member";
     };
     CompositeTypes: {
@@ -462,7 +462,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      category_type: ["income", "expense"],
+      category_type: ["income", "expense", "saving"],
       household_role: ["owner", "member"],
     },
   },

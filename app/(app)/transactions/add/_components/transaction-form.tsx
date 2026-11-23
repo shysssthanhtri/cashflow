@@ -55,6 +55,7 @@ export type CategoryOption = {
 const TYPE_ITEMS = [
   { label: "Expense", value: "expense" },
   { label: "Income", value: "income" },
+  { label: "Saving", value: "saving" },
 ];
 
 function toDateString(d: Date) {

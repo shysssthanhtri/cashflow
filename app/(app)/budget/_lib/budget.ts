@@ -10,6 +10,7 @@ export type BudgetProgress = {
   spent: number;
   ratio: number;
   over: boolean;
+  saving: boolean;
 };
 
 // Sub-category spending counts toward its parent's budget.
@@ -22,8 +23,8 @@ export function budgetProgress(
   const spentBy = new Map<string, number>();
   let totalSpent = 0;
   for (const t of transactions) {
-    if (t.type !== "expense") continue;
-    totalSpent += t.amount;
+    if (t.type === "income") continue;
+    if (t.type === "expense") totalSpent += t.amount;
     const category = t.categoryId ? byId.get(t.categoryId) : undefined;
     if (!category) continue;
     const key = category.parentId ?? category.id;
@@ -33,7 +34,7 @@ export function budgetProgress(
   const progress = (
     budget: Budget,
     spent: number,
-    meta: Pick<BudgetProgress, "name" | "icon" | "color">
+    meta: Pick<BudgetProgress, "name" | "icon" | "color" | "saving">
   ): BudgetProgress => ({
     budget,
     ...meta,
@@ -52,6 +53,7 @@ export function budgetProgress(
         name: category.name,
         icon: category.icon,
         color: category.color,
+        saving: category.type === "saving",
       })
     );
   }
@@ -63,6 +65,7 @@ export function budgetProgress(
           name: "Overall",
           icon: null,
           color: "#a1a1aa",
+          saving: false,
         })
       : null,
     categories: rows,

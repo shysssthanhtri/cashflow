@@ -30,7 +30,7 @@ export default async function AddBudgetPage({
   const options = [
     ...(taken.has(null) ? [] : [{ value: OVERALL, label: "Overall" }]),
     ...categories
-      .filter((c) => c.type === "expense" && !c.parentId && !taken.has(c.id))
+      .filter((c) => c.type !== "income" && !c.parentId && !taken.has(c.id))
       .map((c) => ({ value: c.id, label: c.name })),
   ];
 

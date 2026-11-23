@@ -67,6 +67,14 @@ export async function BudgetContent({
 function BudgetRow({ item }: { item: BudgetProgress }) {
   const remaining = item.budget.amount - item.spent;
   const isCategory = item.icon !== null;
+  const reached = item.spent >= item.budget.amount;
+  const tone = item.saving
+    ? reached
+      ? "text-green-600"
+      : "text-destructive"
+    : item.over
+      ? "text-destructive"
+      : "text-muted-foreground";
   return (
     <Link
       href={ROUTES.budgetEdit(item.budget.id)}
@@ -99,14 +107,12 @@ function BudgetRow({ item }: { item: BudgetProgress }) {
             : item.over && "[&_[data-slot=progress-indicator]]:bg-destructive"
         )}
       />
-      <p
-        className={
-          item.over
-            ? "text-xs text-destructive"
-            : "text-xs text-muted-foreground"
-        }
-      >
-        {item.over ? `${fmt(-remaining)} over` : `${fmt(remaining)} left`}
+      <p className={cn("text-xs", tone)}>
+        {item.saving && remaining === 0
+          ? "Target reached"
+          : item.over
+            ? `${fmt(-remaining)} ${item.saving ? "over target" : "over"}`
+            : `${fmt(remaining)} left`}
       </p>
     </Link>
   );

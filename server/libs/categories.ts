@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 export type Category = {
   id: string;
   name: string;
-  type: "income" | "expense";
+  type: "income" | "expense" | "saving";
   parentId: string | null;
   icon: string;
   color: string;

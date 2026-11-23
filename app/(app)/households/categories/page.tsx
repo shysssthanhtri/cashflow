@@ -11,6 +11,7 @@ import { getActiveHouseholdId } from "@/server/libs/households";
 const TYPES = [
   { type: "expense", label: "Expense" },
   { type: "income", label: "Income" },
+  { type: "saving", label: "Saving" },
 ] as const;
 
 function CategoryGroup({

@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { listCategories } from "@/server/libs/categories";
 import { listTransactions } from "@/server/libs/transactions";
 
@@ -87,18 +88,27 @@ export async function ReportContent({
     );
   }
 
-  const savingsRate = now.income > 0 ? now.net / now.income : null;
+  const savingsRate =
+    now.income > 0 ? (now.net + now.saving) / now.income : null;
 
   return (
     <div className="flex flex-col gap-4">
       <section className="rounded-xl border">
-        <dl className="grid grid-cols-3 divide-x border-b">
+        <dl className="grid grid-cols-2 border-b">
           {[
             { label: "Income", value: fmt(now.income) },
             { label: "Expense", value: fmt(now.expense) },
+            { label: "Saving", value: fmt(now.saving) },
             { label: "Net", value: signed(now.net) },
-          ].map(({ label, value }) => (
-            <div key={label} className="px-4 py-3">
+          ].map(({ label, value }, i) => (
+            <div
+              key={label}
+              className={cn(
+                "px-4 py-3",
+                i % 2 === 0 && "border-r",
+                i < 2 && "border-b"
+              )}
+            >
               <dt className="text-xs text-muted-foreground">{label}</dt>
               <dd className="font-semibold">{value}</dd>
             </div>

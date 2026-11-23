@@ -16,6 +16,7 @@ export type TrendPoint = {
   label: string;
   income: number;
   expense: number;
+  saving: number;
 };
 
 const MOBILE_MONTHS = 6;
@@ -24,6 +25,7 @@ const QUERY = "(max-width: 767px)";
 const config = {
   income: { label: "Income", color: "#16a34a" },
   expense: { label: "Expense", color: "#f43f5e" },
+  saving: { label: "Saving", color: "#3b82f6" },
 } satisfies ChartConfig;
 
 const compact = new Intl.NumberFormat(undefined, {
@@ -80,7 +82,7 @@ export function TrendChart({
         }}
       >
         <TabsList>
-          <TabsTrigger value="cashflow">Income / Expense</TabsTrigger>
+          <TabsTrigger value="cashflow">Cashflow</TabsTrigger>
           <TabsTrigger value="category">Category</TabsTrigger>
         </TabsList>
       </Tabs>
@@ -114,7 +116,7 @@ export function TrendChart({
               {isMobile && mode === "cashflow" && (
                 <LabelList
                   dataKey={key}
-                  position={key === "income" ? "top" : "bottom"}
+                  position={key === "expense" ? "bottom" : "top"}
                   offset={8}
                   className="fill-foreground text-[10px]"
                   formatter={(v: unknown) => compact.format(Number(v))}

@@ -30,13 +30,13 @@ export async function saveBudget(
   const validMonth = parseMonth(month);
 
   if (category) {
-    // Budgets live on top-level expense categories; sub-categories roll up.
+    // Budgets live on top-level expense or saving categories; sub-categories roll up.
     const { data } = await supabase
       .from("categories")
       .select("id")
       .eq("id", category)
       .eq("household_id", householdId)
-      .eq("type", "expense")
+      .in("type", ["expense", "saving"])
       .is("parent_id", null)
       .is("archived_at", null)
       .maybeSingle();

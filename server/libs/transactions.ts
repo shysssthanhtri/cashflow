@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export type Transaction = {
   id: string;
-  type: "income" | "expense";
+  type: "income" | "expense" | "saving";
   amount: number;
   note: string | null;
   occurredAt: string;

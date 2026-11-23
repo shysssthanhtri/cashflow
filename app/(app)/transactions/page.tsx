@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { CategoryBadge } from "@/components/category-badge";
 import { ROUTES } from "@/config/routes";
+import { cn } from "@/lib/utils";
 import { listCategories } from "@/server/libs/categories";
 import { getActiveHouseholdId } from "@/server/libs/households";
 import { listTransactions } from "@/server/libs/transactions";
@@ -72,16 +73,28 @@ async function TransactionList({
     .filter((t) => t.type === "expense")
     .reduce((sum, t) => sum + t.amount, 0);
 
+  const saving = transactions
+    .filter((t) => t.type === "saving")
+    .reduce((sum, t) => sum + t.amount, 0);
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
-        <dl className="grid shrink-0 grid-cols-3 divide-x border-b">
+        <dl className="grid shrink-0 grid-cols-2 border-b">
           {[
             { label: "Income", value: amountFormat.format(income) },
             { label: "Expense", value: amountFormat.format(expense) },
-            { label: "Net", value: signed(income - expense) },
-          ].map(({ label, value }) => (
-            <div key={label} className="px-4 py-3">
+            { label: "Saving", value: amountFormat.format(saving) },
+            { label: "Net", value: signed(income - expense - saving) },
+          ].map(({ label, value }, i) => (
+            <div
+              key={label}
+              className={cn(
+                "px-4 py-3",
+                i % 2 === 0 && "border-r",
+                i < 2 && "border-b"
+              )}
+            >
               <dt className="text-xs text-muted-foreground">{label}</dt>
               <dd className="font-semibold">{value}</dd>
             </div>

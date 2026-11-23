@@ -10,5 +10,5 @@
 - [x] Add page
 - [x] report page
 - [x] async transactions
-- [ ] budget page
+- [x] budget page
 - [ ] i18n

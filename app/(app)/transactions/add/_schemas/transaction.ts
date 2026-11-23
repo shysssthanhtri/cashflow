@@ -9,7 +9,7 @@ export const transactionSchema = z.object({
   amount: z
     .string()
     .refine((v) => parseAmount(v) !== null, "Enter a valid amount."),
-  type: z.enum(["expense", "income"]),
+  type: z.enum(["expense", "income", "saving"]),
   categoryId: z.string(),
   occurredAt: z.iso.date("Date is required."),
 });

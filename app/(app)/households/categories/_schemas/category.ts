@@ -2,7 +2,7 @@ import * as z from "zod";
 
 import { CATEGORY_COLORS, CATEGORY_ICON_NAMES } from "../_lib/category-style";
 
-export const CATEGORY_TYPES = ["expense", "income"] as const;
+export const CATEGORY_TYPES = ["expense", "income", "saving"] as const;
 export const NO_PARENT = "none";
 
 export const categorySchema = z.object({
