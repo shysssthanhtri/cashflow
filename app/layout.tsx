@@ -84,7 +84,7 @@ export default function RootLayout({
         <SplashScreen />
         <ThemeProvider>{children}</ThemeProvider>
         <ServiceWorkerRegister />
-        <SpeedInsights />
+        {process.env.NODE_ENV === "production" && <SpeedInsights />}
       </body>
     </html>
   );
