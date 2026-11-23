@@ -191,6 +191,10 @@
     "savedLocally": "Đã lưu trên máy",
     "pending": "{count} đang chờ",
     "noNote": "(không có ghi chú)",
-    "discard": "Bỏ"
+    "discard": "Bỏ",
+    "prepaidLabel": "Ứng trước (trả bằng tiền cá nhân)",
+    "prepaid": "Ứng trước",
+    "markClaimed": "Đánh dấu đã hoàn",
+    "unclaimedTotal": "Chưa hoàn {amount}"
   }
 }

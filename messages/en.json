@@ -191,6 +191,10 @@
     "savedLocally": "Saved locally",
     "pending": "{count} pending",
     "noNote": "(no note)",
-    "discard": "Discard"
+    "discard": "Discard",
+    "prepaidLabel": "Prepaid (paid with my own money)",
+    "prepaid": "Prepaid",
+    "markClaimed": "Mark claimed",
+    "unclaimedTotal": "Unclaimed prepaid {amount}"
   }
 }

@@ -10,6 +10,8 @@ export const transactionSchema = z.object({
   type: z.enum(["expense", "income", "saving"]),
   categoryId: z.string(),
   occurredAt: z.iso.date("dateRequired"),
+  // Optional so items queued before this field existed still validate.
+  prepaid: z.boolean().optional(),
 });
 
 export type TransactionValues = z.infer<typeof transactionSchema>;

@@ -8,6 +8,7 @@ import { listCategories } from "@/server/libs/categories";
 import { getActiveHouseholdId } from "@/server/libs/households";
 import { listTransactions } from "@/server/libs/transactions";
 
+import { ClaimButton } from "./_components/claim-button";
 import { MonthSelector } from "./_components/month-selector";
 import { ScrollAreaWithArrows } from "./_components/scroll-area-with-arrows";
 import { currentMonth, monthRange, parseMonth } from "./_lib/month";
@@ -40,6 +41,7 @@ async function TransactionList({
   month: string;
 }) {
   const t = await getTranslations("transactions");
+  const tt = t;
   const tr = await getTranslations("report");
   const locale = await getLocale();
   const amountFormat = new Intl.NumberFormat(locale, {
@@ -75,6 +77,10 @@ async function TransactionList({
     .filter((t) => t.type === "expense")
     .reduce((sum, t) => sum + t.amount, 0);
 
+  const unclaimed = transactions
+    .filter((t) => t.prepaid && !t.claimedAt)
+    .reduce((sum, t) => sum + t.amount, 0);
+
   const saving = transactions
     .filter((t) => t.type === "saving")
     .reduce((sum, t) => sum + t.amount, 0);
@@ -102,6 +108,11 @@ async function TransactionList({
             </div>
           ))}
         </dl>
+        {unclaimed > 0 && (
+          <p className="shrink-0 border-b px-4 py-2 text-xs text-amber-600">
+            {t("unclaimedTotal", { amount: amountFormat.format(unclaimed) })}
+          </p>
+        )}
         <ScrollAreaWithArrows>
           {transactions.length === 0 ? (
             <p className="px-4 py-6 text-sm text-muted-foreground">
@@ -152,6 +163,14 @@ async function TransactionList({
                                   ? `${parent.name} / ${category.name}`
                                   : category.name}
                               </CategoryBadge>
+                            )}
+                            {t.prepaid && !t.claimedAt && (
+                              <div className="mt-1 flex items-center gap-2">
+                                <span className="text-xs text-amber-600">
+                                  {tt("prepaid")}
+                                </span>
+                                <ClaimButton id={t.id} />
+                              </div>
                             )}
                           </div>
                           <span

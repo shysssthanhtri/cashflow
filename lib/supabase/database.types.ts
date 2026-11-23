@@ -247,6 +247,7 @@ export type Database = {
         Row: {
           amount: number;
           category_id: string | null;
+          claimed_at: string | null;
           client_id: string | null;
           created_at: string;
           created_by: string | null;
@@ -254,12 +255,14 @@ export type Database = {
           id: string;
           note: string | null;
           occurred_at: string;
+          prepaid: boolean;
           type: Database["public"]["Enums"]["category_type"];
         };
         ComputedFields: never;
         Insert: {
           amount: number;
           category_id?: string | null;
+          claimed_at?: string | null;
           client_id?: string | null;
           created_at?: string;
           created_by?: string | null;
@@ -267,11 +270,13 @@ export type Database = {
           id?: string;
           note?: string | null;
           occurred_at: string;
+          prepaid?: boolean;
           type?: Database["public"]["Enums"]["category_type"];
         };
         Update: {
           amount?: number;
           category_id?: string | null;
+          claimed_at?: string | null;
           client_id?: string | null;
           created_at?: string;
           created_by?: string | null;
@@ -279,6 +284,7 @@ export type Database = {
           id?: string;
           note?: string | null;
           occurred_at?: string;
+          prepaid?: boolean;
           type?: Database["public"]["Enums"]["category_type"];
         };
         Relationships: [

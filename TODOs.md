@@ -11,4 +11,6 @@
 - [x] report page
 - [x] async transactions
 - [x] budget page
-- [ ] i18n
+- [x] i18n
+- [] claim transactions
+- [] web

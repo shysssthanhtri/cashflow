@@ -97,6 +97,7 @@ export function TransactionForm({
     type: "expense",
     categoryId: NO_CATEGORY,
     occurredAt: toDateString(new Date()),
+    prepaid: false,
   };
   const form = useForm<TransactionValues>({
     resolver: zodResolver(transactionSchema),
@@ -104,6 +105,7 @@ export function TransactionForm({
   });
   const amountText = useWatch({ control: form.control, name: "amount" });
   const categoryId = useWatch({ control: form.control, name: "categoryId" });
+  const type = useWatch({ control: form.control, name: "type" });
   const parsedAmount = parseAmount(amountText);
   const formatted =
     parsedAmount === null
@@ -321,6 +323,25 @@ export function TransactionForm({
             </Field>
           )}
         />
+        {type === "expense" && (
+          <Controller
+            name="prepaid"
+            control={form.control}
+            render={({ field }) => (
+              <Field orientation="horizontal" className="w-fit">
+                <Switch
+                  id="tx-prepaid"
+                  name={field.name}
+                  checked={!!field.value}
+                  onCheckedChange={field.onChange}
+                />
+                <FieldLabel htmlFor="tx-prepaid" className="cursor-pointer">
+                  {t("prepaidLabel")}
+                </FieldLabel>
+              </Field>
+            )}
+          />
+        )}
         <Controller
           name="occurredAt"
           control={form.control}

@@ -96,6 +96,7 @@ export async function addTransactions(
       amount,
       note: values.note || null,
       occurred_at: values.occurredAt,
+      prepaid: values.type === "expense" && !!values.prepaid,
       created_by: user?.id ?? null,
     });
   }

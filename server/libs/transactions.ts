@@ -7,6 +7,8 @@ export type Transaction = {
   note: string | null;
   occurredAt: string;
   categoryId: string | null;
+  prepaid: boolean;
+  claimedAt: string | null;
 };
 
 export async function listTransactions(
@@ -16,7 +18,9 @@ export async function listTransactions(
   const supabase = await createClient();
   const { data } = await supabase
     .from("transactions")
-    .select("id, type, amount, note, occurred_at, category_id")
+    .select(
+      "id, type, amount, note, occurred_at, category_id, prepaid, claimed_at"
+    )
     .eq("household_id", householdId)
     .gte("occurred_at", range.from)
     .lt("occurred_at", range.to)
@@ -29,5 +33,7 @@ export async function listTransactions(
     note: t.note,
     occurredAt: t.occurred_at,
     categoryId: t.category_id,
+    prepaid: t.prepaid,
+    claimedAt: t.claimed_at,
   }));
 }
