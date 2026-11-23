@@ -7,6 +7,7 @@ import { getActiveHouseholdId } from "@/server/libs/households";
 import { listTransactions } from "@/server/libs/transactions";
 
 import { MonthSelector } from "./_components/month-selector";
+import { ScrollAreaWithArrows } from "./_components/scroll-area-with-arrows";
 import { currentMonth, monthRange, parseMonth } from "./_lib/month";
 
 const amountFormat = new Intl.NumberFormat(undefined, {
@@ -86,7 +87,7 @@ async function TransactionList({
             </div>
           ))}
         </dl>
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <ScrollAreaWithArrows>
           {transactions.length === 0 ? (
             <p className="px-4 py-6 text-sm text-muted-foreground">
               No transactions yet.
@@ -151,7 +152,7 @@ async function TransactionList({
               </section>
             ))
           )}
-        </div>
+        </ScrollAreaWithArrows>
       </div>
     </div>
   );
