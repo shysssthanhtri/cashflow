@@ -177,6 +177,7 @@ export type Database = {
         Row: {
           amount: number;
           category_id: string | null;
+          client_id: string | null;
           created_at: string;
           created_by: string | null;
           household_id: string;
@@ -189,6 +190,7 @@ export type Database = {
         Insert: {
           amount: number;
           category_id?: string | null;
+          client_id?: string | null;
           created_at?: string;
           created_by?: string | null;
           household_id: string;
@@ -200,6 +202,7 @@ export type Database = {
         Update: {
           amount?: number;
           category_id?: string | null;
+          client_id?: string | null;
           created_at?: string;
           created_by?: string | null;
           household_id?: string;

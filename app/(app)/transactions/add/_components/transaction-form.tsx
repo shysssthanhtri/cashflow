@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { CategoryBadge } from "@/components/category-badge";
@@ -31,15 +31,16 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
-import { addTransaction } from "../_actions/add-transaction";
 import { matchCategory } from "../_lib/match-category";
 import { extractAmount, parseAmount } from "../_lib/parse-amount";
+import { useOutbox } from "../_lib/use-outbox";
 import {
   NO_CATEGORY,
   transactionSchema,
   type TransactionValues,
   validateOccurredAt,
 } from "../_schemas/transaction";
+import { SyncStatus } from "./sync-status";
 
 type TxType = TransactionValues["type"];
 
@@ -80,7 +81,7 @@ export function TransactionForm({
   topCategoryIds: string[];
   currency: string;
 }) {
-  const [pending, startTransition] = useTransition();
+  const outbox = useOutbox();
   const [dateOpen, setDateOpen] = useState(false);
   const [amountEdited, setAmountEdited] = useState(false);
   const [categoryEdited, setCategoryEdited] = useState(false);
@@ -125,17 +126,11 @@ export function TransactionForm({
       form.setError("occurredAt", { message: error });
       return;
     }
-    startTransition(async () => {
-      const result = await addTransaction(values);
-      if (result.error) {
-        form.setError("root", { message: result.error });
-        return;
-      }
-      setAmountEdited(false);
-      setCategoryEdited(false);
-      form.reset({ ...defaultValues, type: values.type });
-      form.setFocus("note");
-    });
+    outbox.enqueue(values);
+    setAmountEdited(false);
+    setCategoryEdited(false);
+    form.reset({ ...defaultValues, type: values.type });
+    form.setFocus("note");
   }
 
   return (
@@ -364,9 +359,20 @@ export function TransactionForm({
         {form.formState.errors.root && (
           <FieldError errors={[form.formState.errors.root]} />
         )}
-        <Button type="submit" disabled={pending}>
-          Add transaction
-        </Button>
+        <Button type="submit">Add transaction</Button>
+        <SyncStatus
+          pendingCount={outbox.pendingCount}
+          syncing={outbox.syncing}
+          failed={outbox.failed}
+          currency={currency}
+          onRestore={(item) => {
+            form.reset(item.values);
+            setAmountEdited(true);
+            setCategoryEdited(true);
+            outbox.discard(item.clientId);
+          }}
+          onDiscard={outbox.discard}
+        />
       </FieldGroup>
     </form>
   );
