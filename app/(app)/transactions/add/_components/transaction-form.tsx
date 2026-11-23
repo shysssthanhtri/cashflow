@@ -32,6 +32,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 import { addTransaction } from "../_actions/add-transaction";
+import { matchCategory } from "../_lib/match-category";
 import { extractAmount, parseAmount } from "../_lib/parse-amount";
 import {
   NO_CATEGORY,
@@ -82,6 +83,7 @@ export function TransactionForm({
   const [pending, startTransition] = useTransition();
   const [dateOpen, setDateOpen] = useState(false);
   const [amountEdited, setAmountEdited] = useState(false);
+  const [categoryEdited, setCategoryEdited] = useState(false);
   const defaultValues: TransactionValues = {
     note: "",
     amount: "",
@@ -130,6 +132,7 @@ export function TransactionForm({
         return;
       }
       setAmountEdited(false);
+      setCategoryEdited(false);
       form.reset({ ...defaultValues, type: values.type });
       form.setFocus("note");
     });
@@ -159,6 +162,11 @@ export function TransactionForm({
                       toAmountText(extractAmount(e.target.value)),
                       { shouldValidate: form.formState.isSubmitted }
                     );
+                  }
+                  if (!categoryEdited) {
+                    const match = matchCategory(e.target.value, categories);
+                    form.setValue("categoryId", match?.id ?? NO_CATEGORY);
+                    if (match) form.setValue("type", match.type as TxType);
                   }
                 }}
               />
@@ -207,6 +215,7 @@ export function TransactionForm({
           control={form.control}
           render={({ field }) => {
             const selectCategory = (value: string) => {
+              setCategoryEdited(true);
               field.onChange(value);
               const picked = categories.find((c) => c.id === value);
               if (picked) form.setValue("type", picked.type as TxType);

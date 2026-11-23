@@ -8,6 +8,7 @@
 - [x] Home
 - [x] settings - home - categories
 - [x] Add page
-- [ ] report page
+- [x] report page
+- [ ] async transactions
 - [ ] budget page
 - [ ] i18n
