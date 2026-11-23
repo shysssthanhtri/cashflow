@@ -9,6 +9,6 @@
 - [x] settings - home - categories
 - [x] Add page
 - [x] report page
-- [ ] async transactions
+- [x] async transactions
 - [ ] budget page
 - [ ] i18n

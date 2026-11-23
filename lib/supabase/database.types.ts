@@ -34,6 +34,76 @@ export type Database = {
   };
   public: {
     Tables: {
+      budget_months: {
+        Row: {
+          household_id: string;
+          month: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          household_id: string;
+          month: string;
+        };
+        Update: {
+          household_id?: string;
+          month?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "budget_months_household_id_fkey";
+            columns: ["household_id"];
+            isOneToOne: false;
+            referencedRelation: "households";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      budgets: {
+        Row: {
+          amount: number;
+          category_id: string | null;
+          created_at: string;
+          household_id: string;
+          id: string;
+          month: string;
+          recurring: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount: number;
+          category_id?: string | null;
+          created_at?: string;
+          household_id: string;
+          id?: string;
+          month: string;
+          recurring?: boolean;
+        };
+        Update: {
+          amount?: number;
+          category_id?: string | null;
+          created_at?: string;
+          household_id?: string;
+          id?: string;
+          month?: string;
+          recurring?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "budgets_category_id_household_id_fkey";
+            columns: ["category_id", "household_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id", "household_id"];
+          },
+          {
+            foreignKeyName: "budgets_household_id_fkey";
+            columns: ["household_id"];
+            isOneToOne: false;
+            referencedRelation: "households";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       categories: {
         Row: {
           archived_at: string | null;
@@ -243,6 +313,10 @@ export type Database = {
       create_household: {
         Args: { p_currency?: string; p_name: string };
         Returns: string;
+      };
+      ensure_month_budgets: {
+        Args: { p_household_id: string; p_month: string };
+        Returns: undefined;
       };
       join_household: { Args: { p_invite_code: string }; Returns: string };
       leave_household: { Args: { p_household_id: string }; Returns: undefined };

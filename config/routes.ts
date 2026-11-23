@@ -4,6 +4,8 @@ export const ROUTES = {
   transactionsAdd: "/transactions/add",
   report: "/report",
   budget: "/budget",
+  budgetAdd: "/budget/add",
+  budgetEdit: (id: string) => `/budget/${id}/edit`,
   other: "/other",
   profile: "/profile",
   appearance: "/appearance",
