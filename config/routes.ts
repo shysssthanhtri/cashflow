@@ -2,6 +2,7 @@ export const ROUTES = {
   home: "/",
   transactions: "/transactions",
   transactionsAdd: "/transactions/add",
+  transactionsEdit: (id: string) => `/transactions/${id}/edit`,
   report: "/report",
   budget: "/budget",
   budgetAdd: "/budget/add",

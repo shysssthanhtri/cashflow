@@ -187,6 +187,8 @@
     "date": "Date",
     "pickDate": "Pick a date",
     "addSubmit": "Add transaction",
+    "editTitle": "Edit transaction",
+    "editSubmit": "Save changes",
     "syncing": "Syncing",
     "savedLocally": "Saved locally",
     "pending": "{count} pending",
@@ -194,6 +196,7 @@
     "discard": "Discard",
     "prepaidLabel": "Prepaid (paid with my own money)",
     "prepaid": "Prepaid",
+    "claimedLabel": "Claimed (reimbursed)",
     "markClaimed": "Mark claimed",
     "unclaimedTotal": "Unclaimed prepaid {amount}"
   }

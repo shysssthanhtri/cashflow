@@ -187,6 +187,8 @@
     "date": "Ngày",
     "pickDate": "Chọn ngày",
     "addSubmit": "Thêm giao dịch",
+    "editTitle": "Sửa giao dịch",
+    "editSubmit": "Lưu thay đổi",
     "syncing": "Đang đồng bộ",
     "savedLocally": "Đã lưu trên máy",
     "pending": "{count} đang chờ",
@@ -194,6 +196,7 @@
     "discard": "Bỏ",
     "prepaidLabel": "Ứng trước (trả bằng tiền cá nhân)",
     "prepaid": "Ứng trước",
+    "claimedLabel": "Đã hoàn tiền",
     "markClaimed": "Đánh dấu đã hoàn",
     "unclaimedTotal": "Chưa hoàn {amount}"
   }

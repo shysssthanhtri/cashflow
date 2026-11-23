@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -142,13 +143,18 @@ async function TransactionList({
                         {idx < items.length - 1 && (
                           <span className="absolute top-3 bottom-0 left-[5px] w-px bg-border" />
                         )}
+                        <Link
+                          href={ROUTES.transactionsEdit(t.id)}
+                          aria-label={t.note || tt("editTitle")}
+                          className="absolute -inset-x-2 -top-1 bottom-1 rounded-md hover:bg-muted/50"
+                        />
                         <span
                           className="relative mt-1.5 size-[11px] shrink-0 rounded-full"
                           style={{
                             backgroundColor: category?.color ?? "#a1a1aa",
                           }}
                         />
-                        <div className="flex min-w-0 flex-1 items-start justify-between gap-3">
+                        <div className="pointer-events-none relative flex min-w-0 flex-1 items-start justify-between gap-3">
                           <div className="min-w-0">
                             {t.note && (
                               <p className="truncate text-sm">{t.note}</p>
@@ -165,7 +171,7 @@ async function TransactionList({
                               </CategoryBadge>
                             )}
                             {t.prepaid && !t.claimedAt && (
-                              <div className="mt-1 flex items-center gap-2">
+                              <div className="pointer-events-auto mt-1 flex items-center gap-2">
                                 <span className="text-xs text-amber-600">
                                   {tt("prepaid")}
                                 </span>

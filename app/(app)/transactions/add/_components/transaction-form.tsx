@@ -2,8 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { enUS, vi } from "react-day-picker/locale";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
@@ -32,7 +33,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { ROUTES } from "@/config/routes";
+import { useErrorMessage } from "@/i18n/use-error-message";
 
+import { updateTransaction } from "../../_actions/update-transaction";
 import { matchCategory } from "../_lib/match-category";
 import { extractAmount, parseAmount } from "../_lib/parse-amount";
 import { useOutbox } from "../_lib/use-outbox";
@@ -73,10 +77,12 @@ export function TransactionForm({
   categories,
   topCategoryIds,
   currency,
+  editing,
 }: {
   categories: CategoryOption[];
   topCategoryIds: string[];
   currency: string;
+  editing?: { id: string; claimed: boolean; values: TransactionValues };
 }) {
   const t = useTranslations("transactions");
   const tr = useTranslations("report");
@@ -89,9 +95,13 @@ export function TransactionForm({
   }));
   const outbox = useOutbox();
   const [dateOpen, setDateOpen] = useState(false);
-  const [amountEdited, setAmountEdited] = useState(false);
-  const [categoryEdited, setCategoryEdited] = useState(false);
-  const defaultValues: TransactionValues = {
+  const router = useRouter();
+  const errorMessage = useErrorMessage();
+  const [saving, startSaving] = useTransition();
+  const [claimed, setClaimed] = useState(editing?.claimed ?? false);
+  const [amountEdited, setAmountEdited] = useState(!!editing);
+  const [categoryEdited, setCategoryEdited] = useState(!!editing);
+  const defaultValues: TransactionValues = editing?.values ?? {
     note: "",
     amount: "",
     type: "expense",
@@ -106,6 +116,7 @@ export function TransactionForm({
   const amountText = useWatch({ control: form.control, name: "amount" });
   const categoryId = useWatch({ control: form.control, name: "categoryId" });
   const type = useWatch({ control: form.control, name: "type" });
+  const prepaid = useWatch({ control: form.control, name: "prepaid" });
   const parsedAmount = parseAmount(amountText);
   const formatted =
     parsedAmount === null
@@ -134,6 +145,17 @@ export function TransactionForm({
       form.setError("occurredAt", { message: error });
       return;
     }
+    if (editing) {
+      startSaving(async () => {
+        const result = await updateTransaction(editing.id, values, claimed);
+        if (result.error) {
+          form.setError("root", { message: errorMessage(result.error) });
+          return;
+        }
+        router.push(ROUTES.transactions);
+      });
+      return;
+    }
     outbox.enqueue(values);
     setAmountEdited(false);
     setCategoryEdited(false);
@@ -155,7 +177,7 @@ export function TransactionForm({
                 id="tx-note"
                 placeholder={t("notePlaceholder")}
                 autoComplete="off"
-                autoFocus
+                autoFocus={!editing}
                 aria-invalid={fieldState.invalid}
                 onChange={(e) => {
                   field.onChange(e);
@@ -342,6 +364,18 @@ export function TransactionForm({
             )}
           />
         )}
+        {editing && type === "expense" && prepaid && (
+          <Field orientation="horizontal" className="w-fit">
+            <Switch
+              id="tx-claimed"
+              checked={claimed}
+              onCheckedChange={setClaimed}
+            />
+            <FieldLabel htmlFor="tx-claimed" className="cursor-pointer">
+              {t("claimedLabel")}
+            </FieldLabel>
+          </Field>
+        )}
         <Controller
           name="occurredAt"
           control={form.control}
@@ -391,20 +425,24 @@ export function TransactionForm({
         {form.formState.errors.root && (
           <FieldError errors={[form.formState.errors.root]} />
         )}
-        <Button type="submit">{t("addSubmit")}</Button>
-        <SyncStatus
-          pendingCount={outbox.pendingCount}
-          syncing={outbox.syncing}
-          failed={outbox.failed}
-          currency={currency}
-          onRestore={(item) => {
-            form.reset(item.values);
-            setAmountEdited(true);
-            setCategoryEdited(true);
-            outbox.discard(item.clientId);
-          }}
-          onDiscard={outbox.discard}
-        />
+        <Button type="submit" disabled={saving}>
+          {editing ? t("editSubmit") : t("addSubmit")}
+        </Button>
+        {!editing && (
+          <SyncStatus
+            pendingCount={outbox.pendingCount}
+            syncing={outbox.syncing}
+            failed={outbox.failed}
+            currency={currency}
+            onRestore={(item) => {
+              form.reset(item.values);
+              setAmountEdited(true);
+              setCategoryEdited(true);
+              outbox.discard(item.clientId);
+            }}
+            onDiscard={outbox.discard}
+          />
+        )}
       </FieldGroup>
     </form>
   );
