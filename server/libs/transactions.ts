@@ -10,13 +10,16 @@ export type Transaction = {
 };
 
 export async function listTransactions(
-  householdId: string
+  householdId: string,
+  range: { from: string; to: string }
 ): Promise<Transaction[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("transactions")
     .select("id, type, amount, note, occurred_at, category_id")
     .eq("household_id", householdId)
+    .gte("occurred_at", range.from)
+    .lt("occurred_at", range.to)
     .order("occurred_at", { ascending: false })
     .order("created_at", { ascending: false });
   return (data ?? []).map((t) => ({

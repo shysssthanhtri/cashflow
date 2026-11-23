@@ -6,6 +6,9 @@ import { listCategories } from "@/server/libs/categories";
 import { getActiveHouseholdId } from "@/server/libs/households";
 import { listTransactions } from "@/server/libs/transactions";
 
+import { MonthSelector } from "./_components/month-selector";
+import { currentMonth, monthRange, parseMonth } from "./_lib/month";
+
 const amountFormat = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
@@ -19,14 +22,21 @@ const dateFormat = new Intl.DateTimeFormat(undefined, {
   timeZone: "UTC",
 });
 
-export default async function TransactionsPage() {
+export default async function TransactionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string }>;
+}) {
+  const month = parseMonth((await searchParams).month);
   const householdId = await getActiveHouseholdId();
   if (!householdId) redirect(ROUTES.households);
 
   return (
     <main className="mx-auto flex h-[calc(100dvh-7rem)] max-w-md flex-col p-4 md:h-dvh">
       <h1 className="px-2 pt-4 pb-4 text-3xl font-bold">History</h1>
-      <TransactionList householdId={householdId} />
+      <MonthSelector month={month} currentMonth={currentMonth()}>
+        <TransactionList householdId={householdId} month={month} />
+      </MonthSelector>
     </main>
   );
 }
@@ -34,9 +44,15 @@ export default async function TransactionsPage() {
 const signed = (n: number) =>
   `${n < 0 ? "-" : "+"}${amountFormat.format(Math.abs(n))}`;
 
-async function TransactionList({ householdId }: { householdId: string }) {
+async function TransactionList({
+  householdId,
+  month,
+}: {
+  householdId: string;
+  month: string;
+}) {
   const [transactions, categories] = await Promise.all([
-    listTransactions(householdId),
+    listTransactions(householdId, monthRange(month)),
     listCategories(householdId),
   ]);
   const categoryOf = (id: string | null) => categories.find((c) => c.id === id);
