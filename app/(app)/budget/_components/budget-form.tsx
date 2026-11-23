@@ -117,7 +117,7 @@ export function BudgetForm({
                 <Input
                   {...field}
                   id="budget-amount"
-                  inputMode="decimal"
+                  inputMode="text"
                   placeholder="e.g. 50000, 50k, 5m"
                   autoComplete="off"
                   aria-invalid={fieldState.invalid}
