@@ -1,6 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { Button } from "@/components/ui/button";
+import { useErrorMessage } from "@/i18n/use-error-message";
 
 import type { OutboxItem } from "../_lib/outbox";
 
@@ -19,12 +22,16 @@ export function SyncStatus({
   onRestore: (item: OutboxItem) => void;
   onDiscard: (clientId: string) => void;
 }) {
+  const t = useTranslations("transactions");
+  const tc = useTranslations("common");
+  const errorMessage = useErrorMessage();
   if (pendingCount === 0 && failed.length === 0) return null;
   return (
     <div className="flex flex-col gap-2 text-sm" aria-live="polite">
       {pendingCount > 0 && (
         <p className="text-muted-foreground">
-          {syncing ? "Syncing" : "Saved locally"} · {pendingCount} pending
+          {syncing ? t("syncing") : t("savedLocally")} ·{" "}
+          {t("pending", { count: pendingCount })}
         </p>
       )}
       {failed.map((item) => (
@@ -34,10 +41,10 @@ export function SyncStatus({
         >
           <div className="min-w-0">
             <p className="truncate">
-              {item.values.note || "(no note)"} · {item.values.amount}{" "}
+              {item.values.note || t("noNote")} · {item.values.amount}{" "}
               {currency}
             </p>
-            <p className="text-destructive">{item.error}</p>
+            <p className="text-destructive">{errorMessage(item.error)}</p>
           </div>
           <div className="flex shrink-0 gap-1">
             <Button
@@ -46,7 +53,7 @@ export function SyncStatus({
               variant="outline"
               onClick={() => onRestore(item)}
             >
-              Edit
+              {tc("edit")}
             </Button>
             <Button
               type="button"
@@ -54,7 +61,7 @@ export function SyncStatus({
               variant="ghost"
               onClick={() => onDiscard(item.clientId)}
             >
-              Discard
+              {t("discard")}
             </Button>
           </div>
         </div>

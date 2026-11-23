@@ -1,6 +1,7 @@
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { ROUTES } from "@/config/routes";
 import { listBudgets } from "@/server/libs/budgets";
@@ -17,6 +18,7 @@ export default async function AddBudgetPage({
 }: {
   searchParams: Promise<{ month?: string }>;
 }) {
+  const t = await getTranslations("budget");
   const month = parseMonth((await searchParams).month);
   const household = await getActiveHouseholdSummary();
   if (!household) redirect(ROUTES.households);
@@ -28,7 +30,7 @@ export default async function AddBudgetPage({
   ]);
   const taken = new Set(budgets.map((b) => b.categoryId));
   const options = [
-    ...(taken.has(null) ? [] : [{ value: OVERALL, label: "Overall" }]),
+    ...(taken.has(null) ? [] : [{ value: OVERALL, label: t("overall") }]),
     ...categories
       .filter((c) => c.type !== "income" && !c.parentId && !taken.has(c.id))
       .map((c) => ({ value: c.id, label: c.name })),
@@ -41,19 +43,17 @@ export default async function AddBudgetPage({
         className="flex items-center gap-1 px-2 pt-4 text-sm text-muted-foreground"
       >
         <ChevronLeftIcon className="size-4" />
-        Budget
+        {t("title")}
       </Link>
-      <h1 className="px-2 pt-2 pb-4 text-3xl font-bold">Add budget</h1>
+      <h1 className="px-2 pt-2 pb-4 text-3xl font-bold">{t("addTitle")}</h1>
       <div className="px-2">
         {options.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Every category already has a budget this month.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("allBudgeted")}</p>
         ) : (
           <BudgetForm
             currency={household.currency}
             options={options}
-            submitLabel="Add budget"
+            submitLabel={t("addSubmit")}
             action={saveBudget.bind(null, month)}
           />
         )}

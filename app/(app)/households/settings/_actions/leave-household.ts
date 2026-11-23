@@ -11,7 +11,7 @@ import {
 
 export async function leaveHousehold(): Promise<{ error: string }> {
   const householdId = await getActiveHouseholdId();
-  if (!householdId) return { error: "No active household." };
+  if (!householdId) return { error: "noActiveHousehold" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("leave_household", {
@@ -23,10 +23,7 @@ export async function leaveHousehold(): Promise<{ error: string }> {
       message: error.message,
     });
     return {
-      error:
-        error.code === "P0001"
-          ? "Make another member an owner before leaving."
-          : "Could not leave household.",
+      error: error.code === "P0001" ? "leaveNeedsOwner" : "leaveFailed",
     };
   }
 

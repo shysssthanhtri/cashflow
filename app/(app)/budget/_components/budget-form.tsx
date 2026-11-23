@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
@@ -45,6 +46,9 @@ export function BudgetForm({
   action: (values: BudgetValues) => Promise<{ error: string }>;
   onDelete?: () => Promise<{ error: string }>;
 }) {
+  const t = useTranslations("budget");
+  const tc = useTranslations("common");
+  const locale = useLocale();
   const [pending, startTransition] = useTransition();
   const form = useForm<BudgetValues>({
     resolver: zodResolver(budgetSchema),
@@ -60,7 +64,7 @@ export function BudgetForm({
   const formatted =
     parsedAmount === null
       ? null
-      : new Intl.NumberFormat(undefined, {
+      : new Intl.NumberFormat(locale, {
           style: "currency",
           currency,
         }).format(parsedAmount);
@@ -80,7 +84,7 @@ export function BudgetForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="budget-category">Category</FieldLabel>
+              <FieldLabel htmlFor="budget-category">{t("category")}</FieldLabel>
               <Select
                 name={field.name}
                 value={field.value}
@@ -111,14 +115,14 @@ export function BudgetForm({
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor="budget-amount">
-                Amount ({currency})
+                {tc("amountWithCurrency", { currency })}
               </FieldLabel>
               <div className="relative">
                 <Input
                   {...field}
                   id="budget-amount"
                   inputMode="text"
-                  placeholder="e.g. 50000, 50k, 5m"
+                  placeholder={tc("amountPlaceholder")}
                   autoComplete="off"
                   aria-invalid={fieldState.invalid}
                   className="pr-14"
@@ -140,10 +144,10 @@ export function BudgetForm({
           render={({ field }) => (
             <Field orientation="horizontal">
               <div className="flex-1">
-                <FieldLabel htmlFor="budget-recurring">Recurring</FieldLabel>
-                <FieldDescription>
-                  Carry this budget over to next month automatically.
-                </FieldDescription>
+                <FieldLabel htmlFor="budget-recurring">
+                  {t("recurring")}
+                </FieldLabel>
+                <FieldDescription>{t("recurringHint")}</FieldDescription>
               </div>
               <Switch
                 id="budget-recurring"
@@ -166,7 +170,7 @@ export function BudgetForm({
             disabled={pending}
             onClick={() => run(onDelete)}
           >
-            Remove budget
+            {t("remove")}
           </Button>
         )}
       </FieldGroup>

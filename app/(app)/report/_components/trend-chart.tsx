@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { useState, useSyncExternalStore } from "react";
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
 
@@ -22,16 +23,11 @@ export type TrendPoint = {
 const MOBILE_MONTHS = 6;
 const QUERY = "(max-width: 767px)";
 
-const config = {
-  income: { label: "Income", color: "#16a34a" },
-  expense: { label: "Expense", color: "#f43f5e" },
-  saving: { label: "Saving", color: "#3b82f6" },
-} satisfies ChartConfig;
-
-const compact = new Intl.NumberFormat(undefined, {
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
+const COLORS = {
+  income: "#16a34a",
+  expense: "#f43f5e",
+  saving: "#3b82f6",
+} as const;
 
 function subscribe(cb: () => void) {
   const mq = window.matchMedia(QUERY);
@@ -50,6 +46,16 @@ export function TrendChart({
   categories: { name: string; color: string }[];
   categoryData: Record<string, number | string>[];
 }) {
+  const t = useTranslations("report");
+  const compact = new Intl.NumberFormat(useLocale(), {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  });
+  const config = {
+    income: { label: t("income"), color: COLORS.income },
+    expense: { label: t("expense"), color: COLORS.expense },
+    saving: { label: t("saving"), color: COLORS.saving },
+  } satisfies ChartConfig;
   const [mode, setMode] = useState<Mode>("cashflow");
   const [hidden, setHidden] = useState<string[]>([]);
   const isMobile = useSyncExternalStore(
@@ -82,8 +88,8 @@ export function TrendChart({
         }}
       >
         <TabsList>
-          <TabsTrigger value="cashflow">Cashflow</TabsTrigger>
-          <TabsTrigger value="category">Category</TabsTrigger>
+          <TabsTrigger value="cashflow">{t("cashflow")}</TabsTrigger>
+          <TabsTrigger value="category">{t("category")}</TabsTrigger>
         </TabsList>
       </Tabs>
       <ChartContainer config={activeConfig} className="h-56 w-full">

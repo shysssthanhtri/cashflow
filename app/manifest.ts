@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
+import { getTranslations } from "next-intl/server";
 
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const t = await getTranslations("meta");
   return {
     name: "Cashflow",
     short_name: "Cashflow",
-    description: "Track your cashflow",
+    description: t("description"),
     start_url: "/transactions/add",
     scope: "/",
     display: "standalone",

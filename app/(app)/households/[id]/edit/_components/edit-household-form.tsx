@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -28,6 +29,7 @@ export function EditHouseholdForm({
   name: string;
   nickname: string;
 }) {
+  const t = useTranslations("households");
   const [pending, startTransition] = useTransition();
   const form = useForm<EditHouseholdValues>({
     resolver: zodResolver(editHouseholdSchema),
@@ -49,7 +51,7 @@ export function EditHouseholdForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="household-name">Household name</FieldLabel>
+              <FieldLabel htmlFor="household-name">{t("name")}</FieldLabel>
               <Input
                 {...field}
                 id="household-name"
@@ -65,13 +67,15 @@ export function EditHouseholdForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="household-nickname">Nickname</FieldLabel>
+              <FieldLabel htmlFor="household-nickname">
+                {t("nickname")}
+              </FieldLabel>
               <Input
                 {...field}
                 id="household-nickname"
                 aria-invalid={fieldState.invalid}
                 autoComplete="off"
-                placeholder="Your display name in this household"
+                placeholder={t("nicknamePlaceholder")}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -81,7 +85,7 @@ export function EditHouseholdForm({
           <FieldError errors={[form.formState.errors.root]} />
         )}
         <Button type="submit" disabled={pending}>
-          Save changes
+          {t("saveChanges")}
         </Button>
       </FieldGroup>
     </form>

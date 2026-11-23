@@ -17,7 +17,7 @@ export async function createHousehold(
   const parsed = createHouseholdSchema.safeParse(values);
   if (!parsed.success) {
     console.error("[createHousehold] invalid input", parsed.error.flatten());
-    return { error: "Invalid household details." };
+    return { error: "invalidHousehold" };
   }
 
   const supabase = await createClient();
@@ -32,7 +32,7 @@ export async function createHousehold(
       details: error?.details,
       hint: error?.hint,
     });
-    return { error: "Could not create household." };
+    return { error: "createHouseholdFailed" };
   }
 
   await setActiveHousehold(data);

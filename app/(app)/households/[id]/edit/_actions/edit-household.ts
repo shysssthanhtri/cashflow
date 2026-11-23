@@ -19,12 +19,12 @@ export async function editHousehold(
   const parsed = editHouseholdSchema.safeParse(values);
   if (!parsed.success) {
     console.error("[editHousehold] invalid input", parsed.error.flatten());
-    return { error: "Invalid household details." };
+    return { error: "invalidHousehold" };
   }
 
   const householdId = await getActiveHouseholdId();
   if (!householdId || householdId !== id) {
-    return { error: "No active household." };
+    return { error: "noActiveHousehold" };
   }
 
   const supabase = await createClient();
@@ -38,7 +38,7 @@ export async function editHousehold(
       code: error?.code,
       message: error?.message,
     });
-    return { error: "Could not update household." };
+    return { error: "updateHouseholdFailed" };
   }
 
   const { error: nicknameError } = await supabase.rpc("set_nickname", {
@@ -50,7 +50,7 @@ export async function editHousehold(
       code: nicknameError.code,
       message: nicknameError.message,
     });
-    return { error: "Could not update nickname." };
+    return { error: "updateNicknameFailed" };
   }
 
   revalidatePath("/", "layout");

@@ -1,6 +1,7 @@
 "use client";
 
 import { LogOutIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
 import {
@@ -14,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useErrorMessage } from "@/i18n/use-error-message";
 
 import { leaveHousehold } from "../_actions/leave-household";
 
@@ -24,6 +26,9 @@ export function LeaveHouseholdButton({
   canLeave: boolean;
   name: string;
 }) {
+  const t = useTranslations("households");
+  const tc = useTranslations("common");
+  const errorMessage = useErrorMessage();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string>();
 
@@ -34,19 +39,18 @@ export function LeaveHouseholdButton({
           disabled={!canLeave}
           className="flex w-full items-center justify-between rounded-xl bg-muted/50 px-4 py-3 text-destructive ring-1 ring-foreground/5 disabled:opacity-50"
         >
-          Leave household
+          {t("leave")}
           <LogOutIcon className="size-4" />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Leave {name}?</AlertDialogTitle>
+            <AlertDialogTitle>{t("leaveTitle", { name })}</AlertDialogTitle>
             <AlertDialogDescription>
-              You will lose access to this household until you rejoin with an
-              invite code.
+              {t("leaveDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{tc("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               disabled={pending}
@@ -57,17 +61,21 @@ export function LeaveHouseholdButton({
                 })
               }
             >
-              {pending ? "Leaving…" : "Leave"}
+              {pending ? t("leaving") : t("leaveShort")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
       {!canLeave && (
         <p className="px-2 pt-2 text-xs text-muted-foreground">
-          You are the only owner. Make another member an owner before leaving.
+          {t("onlyOwner")}
         </p>
       )}
-      {error && <p className="px-2 pt-2 text-xs text-destructive">{error}</p>}
+      {error && (
+        <p className="px-2 pt-2 text-xs text-destructive">
+          {errorMessage(error)}
+        </p>
+      )}
     </div>
   );
 }

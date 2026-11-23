@@ -1,11 +1,13 @@
 "use client";
 
 import { CheckIcon, CopyIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
 export function CopyField({ value }: { value: string }) {
+  const t = useTranslations("households");
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -22,7 +24,7 @@ export function CopyField({ value }: { value: string }) {
         variant="ghost"
         size="icon"
         onClick={copy}
-        aria-label="Copy invite code"
+        aria-label={t("copyInviteCode")}
       >
         {copied ? <CheckIcon /> : <CopyIcon />}
       </Button>

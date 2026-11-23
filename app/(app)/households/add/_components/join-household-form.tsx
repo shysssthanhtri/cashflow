@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -20,6 +21,7 @@ import {
 } from "../_schemas/join-household";
 
 export function JoinHouseholdForm() {
+  const t = useTranslations("households");
   const [pending, startTransition] = useTransition();
   const form = useForm<JoinHouseholdValues>({
     resolver: zodResolver(joinHouseholdSchema),
@@ -42,7 +44,7 @@ export function JoinHouseholdForm() {
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor="household-invite-code">
-                Invite code
+                {t("inviteCode")}
               </FieldLabel>
               <Input
                 {...field}
@@ -58,7 +60,7 @@ export function JoinHouseholdForm() {
           <FieldError errors={[form.formState.errors.root]} />
         )}
         <Button type="submit" variant="outline" disabled={pending}>
-          Join household
+          {t("joinSubmit")}
         </Button>
       </FieldGroup>
     </form>

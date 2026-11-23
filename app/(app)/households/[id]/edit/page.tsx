@@ -1,6 +1,7 @@
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { ROUTES } from "@/config/routes";
 import { getActiveHousehold } from "@/server/libs/households";
@@ -12,6 +13,7 @@ export default async function EditHouseholdPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("households");
   const { id } = await params;
   const household = await getActiveHousehold();
   if (!household) redirect(ROUTES.households);
@@ -28,9 +30,9 @@ export default async function EditHouseholdPage({
         className="flex items-center gap-1 px-2 pt-4 text-sm text-muted-foreground"
       >
         <ChevronLeftIcon className="size-4" />
-        Household
+        {t("title")}
       </Link>
-      <h1 className="px-2 pt-2 pb-4 text-3xl font-bold">Edit household</h1>
+      <h1 className="px-2 pt-2 pb-4 text-3xl font-bold">{t("edit")}</h1>
       <div className="px-2">
         <EditHouseholdForm
           id={household.id}

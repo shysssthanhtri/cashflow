@@ -45,10 +45,10 @@ export async function addTransactions(
   batch: PendingTransaction[]
 ): Promise<BatchResult[]> {
   const parsed = batchSchema.safeParse(batch);
-  if (!parsed.success) return failAll(batch, "Invalid transaction details.");
+  if (!parsed.success) return failAll(batch, "invalidTransaction");
 
   const householdId = await getActiveHouseholdId();
-  if (!householdId) return failAll(batch, "No active household.");
+  if (!householdId) return failAll(batch, "noActiveHousehold");
 
   const supabase = await createClient();
   const [
@@ -75,14 +75,14 @@ export async function addTransactions(
   for (const { clientId, values } of parsed.data) {
     const amount = parseAmount(values.amount);
     let error: string | null = null;
-    if (amount === null) error = "Enter a valid amount.";
+    if (amount === null) error = "invalidAmount";
     else error = validateOccurredAt(values.occurredAt, today);
     if (
       !error &&
       values.categoryId !== NO_CATEGORY &&
       categoryTypes.get(values.categoryId) !== values.type
     ) {
-      error = "Invalid category.";
+      error = "invalidCategoryShort";
     }
     if (error || amount === null) {
       results.push({ clientId, status: "error", error: error ?? undefined });

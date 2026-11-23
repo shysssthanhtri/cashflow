@@ -9,6 +9,7 @@ export const ROUTES = {
   other: "/other",
   profile: "/profile",
   appearance: "/appearance",
+  language: "/language",
   householdsSettings: "/households/settings",
   householdsEdit: (id: string) => `/households/${id}/edit`,
   householdsMembers: "/households/members",

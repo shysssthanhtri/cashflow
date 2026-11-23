@@ -1,6 +1,7 @@
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { ROUTES } from "@/config/routes";
 import { getBudget } from "@/server/libs/budgets";
@@ -16,6 +17,7 @@ export default async function EditBudgetPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("budget");
   const { id } = await params;
   const household = await getActiveHouseholdSummary();
   if (!household) redirect(ROUTES.households);
@@ -30,7 +32,7 @@ export default async function EditBudgetPage({
 
   const categoryId = budget.category_id ?? OVERALL;
   const label =
-    categories.find((c) => c.id === budget.category_id)?.name ?? "Overall";
+    categories.find((c) => c.id === budget.category_id)?.name ?? t("overall");
 
   return (
     <main className="mx-auto max-w-md p-4">
@@ -39,15 +41,15 @@ export default async function EditBudgetPage({
         className="flex items-center gap-1 px-2 pt-4 text-sm text-muted-foreground"
       >
         <ChevronLeftIcon className="size-4" />
-        Budget
+        {t("title")}
       </Link>
-      <h1 className="px-2 pt-2 pb-4 text-3xl font-bold">Edit budget</h1>
+      <h1 className="px-2 pt-2 pb-4 text-3xl font-bold">{t("editTitle")}</h1>
       <div className="px-2">
         <BudgetForm
           currency={household.currency}
           options={[{ value: categoryId, label }]}
           categoryLocked
-          submitLabel="Save changes"
+          submitLabel={t("saveChanges")}
           action={saveBudget.bind(null, month)}
           onDelete={deleteBudget.bind(null, id, month)}
           defaultValues={{

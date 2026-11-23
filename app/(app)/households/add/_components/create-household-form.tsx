@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -31,6 +32,7 @@ import {
 const CURRENCY_ITEMS = CURRENCIES.map((c) => ({ label: c, value: c }));
 
 export function CreateHouseholdForm() {
+  const t = useTranslations("households");
   const [pending, startTransition] = useTransition();
   const form = useForm<CreateHouseholdValues>({
     resolver: zodResolver(createHouseholdSchema),
@@ -52,7 +54,7 @@ export function CreateHouseholdForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="household-name">Household name</FieldLabel>
+              <FieldLabel htmlFor="household-name">{t("name")}</FieldLabel>
               <Input
                 {...field}
                 id="household-name"
@@ -68,7 +70,9 @@ export function CreateHouseholdForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="household-currency">Currency</FieldLabel>
+              <FieldLabel htmlFor="household-currency">
+                {t("currency")}
+              </FieldLabel>
               <Select
                 name={field.name}
                 value={field.value}
@@ -100,7 +104,7 @@ export function CreateHouseholdForm() {
           <FieldError errors={[form.formState.errors.root]} />
         )}
         <Button type="submit" disabled={pending}>
-          Create household
+          {t("createSubmit")}
         </Button>
       </FieldGroup>
     </form>

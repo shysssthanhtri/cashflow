@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { CategoryBadge } from "@/components/category-badge";
 import { ROUTES } from "@/config/routes";
@@ -11,40 +12,25 @@ import { MonthSelector } from "./_components/month-selector";
 import { ScrollAreaWithArrows } from "./_components/scroll-area-with-arrows";
 import { currentMonth, monthRange, parseMonth } from "./_lib/month";
 
-const amountFormat = new Intl.NumberFormat(undefined, {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-});
-
-const dateFormat = new Intl.DateTimeFormat(undefined, {
-  weekday: "short",
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
 export default async function TransactionsPage({
   searchParams,
 }: {
   searchParams: Promise<{ month?: string }>;
 }) {
+  const t = await getTranslations("transactions");
   const month = parseMonth((await searchParams).month);
   const householdId = await getActiveHouseholdId();
   if (!householdId) redirect(ROUTES.households);
 
   return (
     <main className="mx-auto flex h-[calc(100dvh-7rem)] max-w-md flex-col p-4 md:h-dvh">
-      <h1 className="px-2 pt-4 pb-4 text-3xl font-bold">History</h1>
+      <h1 className="px-2 pt-4 pb-4 text-3xl font-bold">{t("history")}</h1>
       <MonthSelector month={month} currentMonth={currentMonth()}>
         <TransactionList householdId={householdId} month={month} />
       </MonthSelector>
     </main>
   );
 }
-
-const signed = (n: number) =>
-  `${n < 0 ? "-" : "+"}${amountFormat.format(Math.abs(n))}`;
 
 async function TransactionList({
   householdId,
@@ -53,6 +39,22 @@ async function TransactionList({
   householdId: string;
   month: string;
 }) {
+  const t = await getTranslations("transactions");
+  const tr = await getTranslations("report");
+  const locale = await getLocale();
+  const amountFormat = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+  const dateFormat = new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+  const signed = (n: number) =>
+    `${n < 0 ? "-" : "+"}${amountFormat.format(Math.abs(n))}`;
   const [transactions, categories] = await Promise.all([
     listTransactions(householdId, monthRange(month)),
     listCategories(householdId),
@@ -82,10 +84,10 @@ async function TransactionList({
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
         <dl className="grid shrink-0 grid-cols-2 border-b">
           {[
-            { label: "Income", value: amountFormat.format(income) },
-            { label: "Expense", value: amountFormat.format(expense) },
-            { label: "Saving", value: amountFormat.format(saving) },
-            { label: "Net", value: signed(income - expense - saving) },
+            { label: tr("income"), value: amountFormat.format(income) },
+            { label: tr("expense"), value: amountFormat.format(expense) },
+            { label: tr("saving"), value: amountFormat.format(saving) },
+            { label: tr("net"), value: signed(income - expense - saving) },
           ].map(({ label, value }, i) => (
             <div
               key={label}
@@ -103,7 +105,7 @@ async function TransactionList({
         <ScrollAreaWithArrows>
           {transactions.length === 0 ? (
             <p className="px-4 py-6 text-sm text-muted-foreground">
-              No transactions yet.
+              {t("empty")}
             </p>
           ) : (
             [...groups.entries()].map(([date, items]) => (
@@ -113,7 +115,11 @@ async function TransactionList({
                     {dateFormat.format(new Date(`${date}T00:00:00Z`))}
                   </h3>
                   <span className="text-xs text-muted-foreground">
-                    Net {signed(items.reduce((sum, t) => sum + delta(t), 0))}
+                    {t("net", {
+                      amount: signed(
+                        items.reduce((sum, i) => sum + delta(i), 0)
+                      ),
+                    })}
                   </span>
                 </div>
                 <ul className="relative mt-3">

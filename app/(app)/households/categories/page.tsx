@@ -1,6 +1,7 @@
 import { ChevronLeftIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { CategoryBadge } from "@/components/category-badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -8,19 +9,16 @@ import { ROUTES } from "@/config/routes";
 import { type Category, listCategories } from "@/server/libs/categories";
 import { getActiveHouseholdId } from "@/server/libs/households";
 
-const TYPES = [
-  { type: "expense", label: "Expense" },
-  { type: "income", label: "Income" },
-  { type: "saving", label: "Saving" },
-] as const;
+const TYPES = ["expense", "income", "saving"] as const;
 
-function CategoryGroup({
+async function CategoryGroup({
   label,
   categories,
 }: {
   label: string;
   categories: Category[];
 }) {
+  const t = await getTranslations("categories");
   const nameOf = (id: string | null) =>
     categories.find((c) => c.id === id)?.name;
   const sorted = [...categories].sort((x, y) =>
@@ -34,7 +32,7 @@ function CategoryGroup({
         {label}
       </h2>
       {sorted.length === 0 ? (
-        <p className="px-2 text-sm text-muted-foreground">No categories yet.</p>
+        <p className="px-2 text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
         <ul className="flex flex-wrap gap-2 px-2">
           {sorted.map((c) => (
@@ -55,6 +53,8 @@ function CategoryGroup({
 }
 
 export default async function HouseholdCategoriesPage() {
+  const t = await getTranslations("categories");
+  const tc = await getTranslations("households");
   const householdId = await getActiveHouseholdId();
   if (!householdId) redirect(ROUTES.households);
   const categories = await listCategories(householdId);
@@ -66,22 +66,22 @@ export default async function HouseholdCategoriesPage() {
         className="flex items-center gap-1 px-2 pt-4 text-sm text-muted-foreground"
       >
         <ChevronLeftIcon className="size-4" />
-        Household
+        {tc("title")}
       </Link>
       <div className="flex items-center justify-between gap-3 px-2 pt-2 pb-4">
-        <h1 className="text-3xl font-bold">Categories</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <Link
           href={ROUTES.householdsCategoriesAdd}
           className={buttonVariants({ size: "sm" })}
         >
           <PlusIcon />
-          Add
+          {t("add")}
         </Link>
       </div>
-      {TYPES.map(({ type, label }) => (
+      {TYPES.map((type) => (
         <CategoryGroup
           key={type}
-          label={label}
+          label={t(`types.${type}`)}
           categories={categories.filter((c) => c.type === type)}
         />
       ))}

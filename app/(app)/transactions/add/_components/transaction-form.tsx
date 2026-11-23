@@ -2,7 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { enUS, vi } from "react-day-picker/locale";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { CategoryBadge } from "@/components/category-badge";
@@ -52,12 +54,6 @@ export type CategoryOption = {
   color: string;
 };
 
-const TYPE_ITEMS = [
-  { label: "Expense", value: "expense" },
-  { label: "Income", value: "income" },
-  { label: "Saving", value: "saving" },
-];
-
 function toDateString(d: Date) {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -82,6 +78,15 @@ export function TransactionForm({
   topCategoryIds: string[];
   currency: string;
 }) {
+  const t = useTranslations("transactions");
+  const tr = useTranslations("report");
+  const tc = useTranslations("common");
+  const tcat = useTranslations("categories");
+  const locale = useLocale();
+  const TYPE_ITEMS = (["expense", "income", "saving"] as const).map((v) => ({
+    label: tcat(`types.${v}`),
+    value: v,
+  }));
   const outbox = useOutbox();
   const [dateOpen, setDateOpen] = useState(false);
   const [amountEdited, setAmountEdited] = useState(false);
@@ -103,12 +108,12 @@ export function TransactionForm({
   const formatted =
     parsedAmount === null
       ? null
-      : new Intl.NumberFormat(undefined, {
+      : new Intl.NumberFormat(locale, {
           style: "currency",
           currency,
         }).format(parsedAmount);
   const categoryItems = [
-    { label: "No category", value: NO_CATEGORY },
+    { label: t("noCategory"), value: NO_CATEGORY },
     ...categories.map((c) => ({ label: c.name, value: c.id })),
   ];
   const topCategories = topCategoryIds
@@ -142,11 +147,11 @@ export function TransactionForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="tx-note">Note</FieldLabel>
+              <FieldLabel htmlFor="tx-note">{t("note")}</FieldLabel>
               <Input
                 {...field}
                 id="tx-note"
-                placeholder="e.g. lunch 14k"
+                placeholder={t("notePlaceholder")}
                 autoComplete="off"
                 autoFocus
                 aria-invalid={fieldState.invalid}
@@ -175,7 +180,9 @@ export function TransactionForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="tx-amount">Amount ({currency})</FieldLabel>
+              <FieldLabel htmlFor="tx-amount">
+                {tc("amountWithCurrency", { currency })}
+              </FieldLabel>
               <div className="relative">
                 <Input
                   {...field}
@@ -222,7 +229,7 @@ export function TransactionForm({
               : topCategories;
             return (
               <Field>
-                <FieldLabel>Category (optional)</FieldLabel>
+                <FieldLabel>{t("categoryOptional")}</FieldLabel>
                 <div className="flex flex-wrap gap-2">
                   {badgeCategories.map((c) => {
                     const selected = field.value === c.id;
@@ -256,11 +263,13 @@ export function TransactionForm({
                     items={categoryItems}
                   >
                     <SelectTrigger id="tx-category" className="w-full">
-                      <SelectValue placeholder="More categories" />
+                      <SelectValue placeholder={t("moreCategories")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value={NO_CATEGORY}>No category</SelectItem>
+                        <SelectItem value={NO_CATEGORY}>
+                          {t("noCategory")}
+                        </SelectItem>
                       </SelectGroup>
                       {TYPE_ITEMS.map((group) => (
                         <SelectGroup key={group.value}>
@@ -307,7 +316,7 @@ export function TransactionForm({
                   categoryId === NO_CATEGORY ? "cursor-pointer" : undefined
                 }
               >
-                {field.value === "income" ? "Income" : "Expense"}
+                {field.value === "income" ? tr("income") : tr("expense")}
               </FieldLabel>
             </Field>
           )}
@@ -317,7 +326,7 @@ export function TransactionForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="tx-date">Date</FieldLabel>
+              <FieldLabel htmlFor="tx-date">{t("date")}</FieldLabel>
               <Popover open={dateOpen} onOpenChange={setDateOpen}>
                 <PopoverTrigger
                   render={
@@ -332,14 +341,15 @@ export function TransactionForm({
                 >
                   <CalendarIcon />
                   {field.value
-                    ? toDate(field.value).toLocaleDateString(undefined, {
+                    ? toDate(field.value).toLocaleDateString(locale, {
                         dateStyle: "medium",
                       })
-                    : "Pick a date"}
+                    : t("pickDate")}
                 </PopoverTrigger>
                 <PopoverContent align="start" className="w-auto p-0">
                   <Calendar
                     mode="single"
+                    locale={locale === "vi" ? vi : enUS}
                     required
                     selected={field.value ? toDate(field.value) : undefined}
                     defaultMonth={field.value ? toDate(field.value) : undefined}
@@ -360,7 +370,7 @@ export function TransactionForm({
         {form.formState.errors.root && (
           <FieldError errors={[form.formState.errors.root]} />
         )}
-        <Button type="submit">Add transaction</Button>
+        <Button type="submit">{t("addSubmit")}</Button>
         <SyncStatus
           pendingCount={outbox.pendingCount}
           syncing={outbox.syncing}

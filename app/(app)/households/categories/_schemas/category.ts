@@ -6,11 +6,7 @@ export const CATEGORY_TYPES = ["expense", "income", "saving"] as const;
 export const NO_PARENT = "none";
 
 export const categorySchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Name is required.")
-    .max(60, "Name must be at most 60 characters."),
+  name: z.string().trim().min(1, "nameRequired").max(60, "nameMax60"),
   type: z.enum(CATEGORY_TYPES),
   parentId: z.string(),
   icon: z.enum(CATEGORY_ICON_NAMES as [string, ...string[]]),

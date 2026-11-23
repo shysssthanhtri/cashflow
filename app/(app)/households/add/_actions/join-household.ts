@@ -15,7 +15,7 @@ export async function joinHousehold(
   values: JoinHouseholdValues
 ): Promise<{ error: string }> {
   const parsed = joinHouseholdSchema.safeParse(values);
-  if (!parsed.success) return { error: "Invalid invite code." };
+  if (!parsed.success) return { error: "invalidInviteCode" };
 
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("join_household", {
@@ -27,10 +27,7 @@ export async function joinHousehold(
       message: error?.message,
     });
     return {
-      error:
-        error?.code === "P0002"
-          ? "Invite code not found."
-          : "Could not join household.",
+      error: error?.code === "P0002" ? "inviteNotFound" : "joinHouseholdFailed",
     };
   }
 

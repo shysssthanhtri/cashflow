@@ -1,12 +1,16 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useErrorMessage } from "@/i18n/use-error-message";
 
 import { promoteMember } from "../_actions/promote-member";
 
 export function PromoteButton({ userId }: { userId: string }) {
+  const t = useTranslations("households");
+  const errorMessage = useErrorMessage();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string>();
 
@@ -23,9 +27,11 @@ export function PromoteButton({ userId }: { userId: string }) {
           })
         }
       >
-        {pending ? "Saving…" : "Make owner"}
+        {pending ? t("saving") : t("makeOwner")}
       </Button>
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p className="text-xs text-destructive">{errorMessage(error)}</p>
+      )}
     </div>
   );
 }

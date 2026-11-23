@@ -18,11 +18,11 @@ export async function saveBudget(
   const parsed = budgetSchema.safeParse(values);
   const amount = parsed.success ? parseAmount(parsed.data.amount) : null;
   if (!parsed.success || amount === null) {
-    return { error: "Invalid budget details." };
+    return { error: "invalidBudget" };
   }
 
   const householdId = await getActiveHouseholdId();
-  if (!householdId) return { error: "No active household." };
+  if (!householdId) return { error: "noActiveHousehold" };
 
   const supabase = await createClient();
   const { categoryId, recurring } = parsed.data;
@@ -40,7 +40,7 @@ export async function saveBudget(
       .is("parent_id", null)
       .is("archived_at", null)
       .maybeSingle();
-    if (!data) return { error: "Invalid category." };
+    if (!data) return { error: "invalidCategoryShort" };
   }
 
   const query = supabase
@@ -71,7 +71,7 @@ export async function saveBudget(
       code: error.code,
       message: error.message,
     });
-    return { error: "Could not save budget." };
+    return { error: "saveBudgetFailed" };
   }
 
   revalidatePath(ROUTES.budget);
@@ -83,7 +83,7 @@ export async function deleteBudget(
   month: string
 ): Promise<{ error: string }> {
   const householdId = await getActiveHouseholdId();
-  if (!householdId) return { error: "No active household." };
+  if (!householdId) return { error: "noActiveHousehold" };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -96,7 +96,7 @@ export async function deleteBudget(
       code: error.code,
       message: error.message,
     });
-    return { error: "Could not remove budget." };
+    return { error: "removeBudgetFailed" };
   }
 
   revalidatePath(ROUTES.budget);

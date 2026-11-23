@@ -10,7 +10,7 @@ export async function promoteMember(
   userId: string
 ): Promise<{ error?: string }> {
   const householdId = await getActiveHouseholdId();
-  if (!householdId) return { error: "No active household." };
+  if (!householdId) return { error: "noActiveHousehold" };
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("promote_member", {
@@ -22,7 +22,7 @@ export async function promoteMember(
       code: error.code,
       message: error.message,
     });
-    return { error: "Could not make this member an owner." };
+    return { error: "promoteFailed" };
   }
 
   revalidatePath(ROUTES.householdsMembers);

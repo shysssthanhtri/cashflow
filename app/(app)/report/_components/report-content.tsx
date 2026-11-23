@@ -1,3 +1,5 @@
+import { getLocale, getTranslations } from "next-intl/server";
+
 import { cn } from "@/lib/utils";
 import { listCategories } from "@/server/libs/categories";
 import { listTransactions } from "@/server/libs/transactions";
@@ -10,17 +12,6 @@ import { TrendChart } from "./trend-chart";
 const TREND_MONTHS = 12;
 const TREND_CATEGORIES = 5;
 
-const amountFormat = new Intl.NumberFormat(undefined, {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-});
-const monthFormat = new Intl.DateTimeFormat(undefined, {
-  month: "short",
-  timeZone: "UTC",
-});
-
-const fmt = (n: number) => amountFormat.format(n);
-const signed = (n: number) => `${n < 0 ? "-" : "+"}${fmt(Math.abs(n))}`;
 const change = (now: number, prev: number) =>
   prev > 0
     ? `${now >= prev ? "+" : "-"}${Math.round((Math.abs(now - prev) / prev) * 100)}%`
@@ -34,6 +25,18 @@ export async function ReportContent({
   householdId: string;
   month: string;
 }) {
+  const tr = await getTranslations("report");
+  const locale = await getLocale();
+  const amountFormat = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+  const monthFormat = new Intl.DateTimeFormat(locale, {
+    month: "short",
+    timeZone: "UTC",
+  });
+  const fmt = (n: number) => amountFormat.format(n);
+  const signed = (n: number) => `${n < 0 ? "-" : "+"}${fmt(Math.abs(n))}`;
   const trendMonths = Array.from({ length: TREND_MONTHS }, (_, i) =>
     shiftMonth(month, i - (TREND_MONTHS - 1))
   );
@@ -78,13 +81,11 @@ export async function ReportContent({
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 5);
   const categoryName = (id: string | null) =>
-    categories.find((c) => c.id === id)?.name ?? "Uncategorized";
+    categories.find((c) => c.id === id)?.name ?? tr("uncategorized");
 
   if (current.length === 0) {
     return (
-      <p className="px-2 py-6 text-sm text-muted-foreground">
-        No transactions this month.
-      </p>
+      <p className="px-2 py-6 text-sm text-muted-foreground">{tr("empty")}</p>
     );
   }
 
@@ -96,10 +97,10 @@ export async function ReportContent({
       <section className="rounded-xl border">
         <dl className="grid grid-cols-2 border-b">
           {[
-            { label: "Income", value: fmt(now.income) },
-            { label: "Expense", value: fmt(now.expense) },
-            { label: "Saving", value: fmt(now.saving) },
-            { label: "Net", value: signed(now.net) },
+            { label: tr("income"), value: fmt(now.income) },
+            { label: tr("expense"), value: fmt(now.expense) },
+            { label: tr("saving"), value: fmt(now.saving) },
+            { label: tr("net"), value: signed(now.net) },
           ].map(({ label, value }, i) => (
             <div
               key={label}
@@ -116,24 +117,24 @@ export async function ReportContent({
         </dl>
         <div className="flex flex-col gap-1 px-4 py-3 text-sm">
           <Row
-            label="Savings rate"
+            label={tr("savingsRate")}
             value={savingsRate === null ? "—" : percent(savingsRate)}
           />
           <Row
-            label="Expense vs last month"
+            label={tr("expenseVsLast")}
             value={change(now.expense, previous.expense)}
           />
           <Row
-            label="Income vs last month"
+            label={tr("incomeVsLast")}
             value={change(now.income, previous.income)}
           />
         </div>
       </section>
 
-      <Card title="Trend">
+      <Card title={tr("trend")}>
         <TrendChart
           categories={topCategories.map((c) => ({
-            name: c.name,
+            name: c.id === null ? tr("uncategorized") : c.name,
             color: c.color,
           }))}
           categoryData={categoryTrend}
@@ -144,12 +145,12 @@ export async function ReportContent({
         />
       </Card>
 
-      <Card title="Where the money">
+      <Card title={tr("breakdown")}>
         <CategoryBreakdown expenses={expenses} incomes={incomes} />
       </Card>
 
       {topExpenses.length > 0 && (
-        <Card title="Biggest expenses">
+        <Card title={tr("biggestExpenses")}>
           <ul className="flex flex-col gap-3">
             {topExpenses.map((t) => (
               <li

@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
@@ -35,12 +36,6 @@ import {
   NO_PARENT,
 } from "../_schemas/category";
 
-const TYPE_ITEMS = [
-  { label: "Expense", value: "expense" },
-  { label: "Income", value: "income" },
-  { label: "Saving", value: "saving" },
-];
-
 export type ParentOption = { id: string; name: string; type: string };
 
 export function CategoryForm({
@@ -54,6 +49,11 @@ export function CategoryForm({
   submitLabel: string;
   action: (values: CategoryValues) => Promise<{ error: string }>;
 }) {
+  const t = useTranslations("categories");
+  const TYPE_ITEMS = (["expense", "income", "saving"] as const).map((v) => ({
+    label: t(`types.${v}`),
+    value: v,
+  }));
   const [pending, startTransition] = useTransition();
   const form = useForm<CategoryValues>({
     resolver: zodResolver(categorySchema),
@@ -69,7 +69,7 @@ export function CategoryForm({
   const color = useWatch({ control: form.control, name: "color" });
   const type = useWatch({ control: form.control, name: "type" });
   const parentItems = [
-    { label: "None (top level)", value: NO_PARENT },
+    { label: t("noParent"), value: NO_PARENT },
     ...parents
       .filter((p) => p.type === type)
       .map((p) => ({ label: p.name, value: p.id })),
@@ -90,7 +90,7 @@ export function CategoryForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="category-name">Name</FieldLabel>
+              <FieldLabel htmlFor="category-name">{t("name")}</FieldLabel>
               <Input
                 {...field}
                 id="category-name"
@@ -106,7 +106,7 @@ export function CategoryForm({
           control={form.control}
           render={({ field }) => (
             <Field>
-              <FieldLabel htmlFor="category-type">Type</FieldLabel>
+              <FieldLabel htmlFor="category-type">{t("type")}</FieldLabel>
               <Select
                 name={field.name}
                 value={field.value}
@@ -137,7 +137,7 @@ export function CategoryForm({
           control={form.control}
           render={({ field }) => (
             <Field>
-              <FieldLabel htmlFor="category-parent">Parent category</FieldLabel>
+              <FieldLabel htmlFor="category-parent">{t("parent")}</FieldLabel>
               <Select
                 name={field.name}
                 value={field.value}
@@ -161,7 +161,7 @@ export function CategoryForm({
           )}
         />
         <Field>
-          <FieldLabel>Icon</FieldLabel>
+          <FieldLabel>{t("icon")}</FieldLabel>
           <div className="flex flex-wrap gap-2">
             {CATEGORY_ICON_NAMES.map((name) => (
               <button
@@ -181,7 +181,7 @@ export function CategoryForm({
           </div>
         </Field>
         <Field>
-          <FieldLabel>Color</FieldLabel>
+          <FieldLabel>{t("color")}</FieldLabel>
           <div className="flex flex-wrap gap-2">
             {CATEGORY_COLORS.map((c) => (
               <button

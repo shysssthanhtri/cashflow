@@ -1,6 +1,7 @@
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { ROUTES } from "@/config/routes";
 import { listCategories } from "@/server/libs/categories";
@@ -16,6 +17,7 @@ export default async function EditCategoryPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const t = await getTranslations("categories");
   const householdId = await getActiveHouseholdId();
   if (!householdId) redirect(ROUTES.households);
   const categories = await listCategories(householdId);
@@ -34,13 +36,13 @@ export default async function EditCategoryPage({
         className="flex items-center gap-1 px-2 pt-4 text-sm text-muted-foreground"
       >
         <ChevronLeftIcon className="size-4" />
-        Categories
+        {t("title")}
       </Link>
-      <h1 className="px-2 pt-2 pb-4 text-3xl font-bold">Edit category</h1>
+      <h1 className="px-2 pt-2 pb-4 text-3xl font-bold">{t("editTitle")}</h1>
       <div className="px-2">
         <CategoryForm
           parents={parents}
-          submitLabel="Save changes"
+          submitLabel={t("saveChanges")}
           action={editCategory.bind(null, id)}
           defaultValues={{
             name: category.name,

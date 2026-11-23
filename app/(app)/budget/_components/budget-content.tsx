@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { CSSProperties } from "react";
 
 import { CategoryIcon } from "@/components/category-icon";
@@ -12,12 +13,6 @@ import { listTransactions } from "@/server/libs/transactions";
 import { currentMonth, monthRange } from "../../transactions/_lib/month";
 import { type BudgetProgress, budgetProgress } from "../_lib/budget";
 
-const amountFormat = new Intl.NumberFormat(undefined, {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-});
-const fmt = (n: number) => amountFormat.format(n);
-
 export async function BudgetContent({
   householdId,
   month,
@@ -25,6 +20,7 @@ export async function BudgetContent({
   householdId: string;
   month: string;
 }) {
+  const t = await getTranslations("budget");
   const [budgets, categories, transactions] = await Promise.all([
     listBudgets(householdId, month, currentMonth()),
     listCategories(householdId),
@@ -38,9 +34,7 @@ export async function BudgetContent({
 
   if (!overall && rows.length === 0) {
     return (
-      <p className="px-2 py-6 text-sm text-muted-foreground">
-        No budgets for this month.
-      </p>
+      <p className="px-2 py-6 text-sm text-muted-foreground">{t("empty")}</p>
     );
   }
 
@@ -64,7 +58,13 @@ export async function BudgetContent({
   );
 }
 
-function BudgetRow({ item }: { item: BudgetProgress }) {
+async function BudgetRow({ item }: { item: BudgetProgress }) {
+  const t = await getTranslations("budget");
+  const amountFormat = new Intl.NumberFormat(await getLocale(), {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+  const fmt = (n: number) => amountFormat.format(n);
   const remaining = item.budget.amount - item.spent;
   const isCategory = item.icon !== null;
   const reached = item.spent >= item.budget.amount;
@@ -89,7 +89,9 @@ function BudgetRow({ item }: { item: BudgetProgress }) {
               className="size-7"
             />
           )}
-          <span className="truncate text-sm font-medium">{item.name}</span>
+          <span className="truncate text-sm font-medium">
+            {isCategory ? item.name : t("overall")}
+          </span>
         </div>
         <span className="text-sm text-muted-foreground">
           {fmt(item.spent)} / {fmt(item.budget.amount)}
@@ -109,10 +111,12 @@ function BudgetRow({ item }: { item: BudgetProgress }) {
       />
       <p className={cn("text-xs", tone)}>
         {item.saving && remaining === 0
-          ? "Target reached"
+          ? t("targetReached")
           : item.over
-            ? `${fmt(-remaining)} ${item.saving ? "over target" : "over"}`
-            : `${fmt(remaining)} left`}
+            ? t(item.saving ? "overTarget" : "over", {
+                amount: fmt(-remaining),
+              })
+            : t("left", { amount: fmt(remaining) })}
       </p>
     </Link>
   );

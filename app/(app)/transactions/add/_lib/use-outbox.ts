@@ -52,7 +52,7 @@ export function useOutbox() {
         const r = byId.get(item.clientId);
         if (!r || r.status === "retry") return [item];
         if (r.status === "ok") return [];
-        return [{ ...item, error: r.error ?? "Could not add transaction." }];
+        return [{ ...item, error: r.error ?? "addTransactionFailed" }];
       });
       writeOutbox(next);
       setItems(next);

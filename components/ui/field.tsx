@@ -2,6 +2,7 @@
 
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 import { Label } from "@/components/ui/label";
@@ -181,6 +182,9 @@ function FieldError({
 }: React.ComponentProps<"div"> & {
   errors?: Array<{ message?: string } | undefined>;
 }) {
+  const t = useTranslations("errors");
+  const translate = (message?: string) =>
+    message && t.has(message as never) ? t(message as never) : message;
   const content = useMemo(() => {
     if (children) {
       return children;
@@ -195,18 +199,19 @@ function FieldError({
     ];
 
     if (uniqueErrors?.length === 1) {
-      return uniqueErrors[0]?.message;
+      return translate(uniqueErrors[0]?.message);
     }
 
     return (
       <ul className="ml-4 flex list-disc flex-col gap-1">
         {uniqueErrors.map(
           (error, index) =>
-            error?.message && <li key={index}>{error.message}</li>
+            error?.message && <li key={index}>{translate(error.message)}</li>
         )}
       </ul>
     );
-  }, [children, errors]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [children, errors, t]);
 
   if (!content) {
     return null;

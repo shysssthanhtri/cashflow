@@ -2,6 +2,7 @@
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -18,21 +19,6 @@ import { ROUTES } from "@/config/routes";
 
 import { shiftMonth } from "../_lib/month";
 
-const MONTH_LABELS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
 const HISTORY_YEARS = 10;
 const SWIPE_DISTANCE = 60;
 
@@ -47,6 +33,11 @@ export function MonthSelector({
   basePath?: string;
   children: ReactNode;
 }) {
+  const t = useTranslations("transactions");
+  const monthLabel = new Intl.DateTimeFormat(useLocale(), {
+    month: "short",
+    timeZone: "UTC",
+  });
   const router = useRouter();
   const start = useRef<{ x: number; y: number } | null>(null);
 
@@ -127,7 +118,7 @@ export function MonthSelector({
       <div className="flex shrink-0 flex-col gap-2">
         <Select value={year} onValueChange={selectYear}>
           <SelectTrigger
-            aria-label="Year"
+            aria-label={t("year")}
             className="mx-auto w-28 justify-center font-medium"
           >
             <SelectValue />
@@ -147,7 +138,7 @@ export function MonthSelector({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label="Scroll months left"
+              aria-label={t("scrollLeft")}
               onClick={() => scrollBy(-1)}
             >
               <ChevronLeftIcon />
@@ -161,7 +152,9 @@ export function MonthSelector({
             onTouchEnd={(e) => e.stopPropagation()}
           >
             {months.map((value) => {
-              const label = MONTH_LABELS[Number(value.slice(5)) - 1];
+              const label = monthLabel.format(
+                new Date(`${value}-01T00:00:00Z`)
+              );
               return (
                 <Badge
                   key={value}
@@ -186,7 +179,7 @@ export function MonthSelector({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label="Scroll months right"
+              aria-label={t("scrollRight")}
               onClick={() => scrollBy(1)}
             >
               <ChevronRightIcon />

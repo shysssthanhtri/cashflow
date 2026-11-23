@@ -1,6 +1,7 @@
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -17,6 +18,8 @@ export default async function BudgetPage({
 }: {
   searchParams: Promise<{ month?: string }>;
 }) {
+  const t = await getTranslations("budget");
+  const tc = await getTranslations("common");
   const month = parseMonth((await searchParams).month);
   const householdId = await getActiveHouseholdId();
   if (!householdId) redirect(ROUTES.households);
@@ -24,13 +27,13 @@ export default async function BudgetPage({
   return (
     <main className="mx-auto max-w-md p-4 pb-8">
       <div className="flex items-center justify-between gap-3 px-2 pt-4 pb-4">
-        <h1 className="text-3xl font-bold">Budget</h1>
+        <h1 className="text-3xl font-bold">{t("title")}</h1>
         <Link
           href={`${ROUTES.budgetAdd}?month=${month}`}
           className={buttonVariants({ size: "sm" })}
         >
           <PlusIcon />
-          Add
+          {tc("add")}
         </Link>
       </div>
       <MonthSelector
